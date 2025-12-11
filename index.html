@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes - Your Personal Note-Taking App</title>
+    <meta name="description"
+        content="A beautiful and simple note-taking application to capture your thoughts and ideas.">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#a05aff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="My Notes">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512x512.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                    <span class="hamburger-icon"></span>
+                </button>
+                <h1 class="app-title">
+                    <span class="title-icon">📝</span>
+                    My Notes
+                </h1>
+                <button class="btn-primary" id="newNoteBtn">
+                    <span class="btn-icon">+</span>
+                    New Note
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mobile Overlay -->
+            <div class="mobile-overlay" id="mobileOverlay"></div>
+            <!-- Sidebar - Notes List -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">All Notes</h2>
+                    <span class="notes-count" id="notesCount">0 notes</span>
+                </div>
+                <div class="notes-list" id="notesList">
+                    <!-- Notes will be dynamically inserted here -->
+                </div>
+            </aside>
+
+            <!-- Editor Area -->
+            <section class="editor-section">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">✨</div>
+                    <h2 class="empty-state-title">No Note Selected</h2>
+                    <p class="empty-state-text">Select a note from the sidebar or create a new one to get started.</p>
+                </div>
+
+                <div class="editor-container" id="editorContainer" style="display: none;">
+                    <div class="editor-header">
+                        <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note Title"
+                            maxlength="100">
+                        <div class="editor-actions">
+                            <button class="btn-icon-action" id="deleteNoteBtn" title="Delete Note">
+                                <span>🗑️</span>
+                            </button>
+                        </div>
+                    </div>
+                    <textarea class="note-content-input" id="noteContentInput"
+                        placeholder="Start typing your note..."></textarea>
+                    <div class="editor-footer">
+                        <span class="last-edited" id="lastEdited">Last edited: Never</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // Handle PWA install prompt
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            console.log('💡 App can be installed!');
+
+            // Optionally, you could show a custom install button here
+            // For now, we'll just log it
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 App installed successfully!');
+            deferredPrompt = null;
+        });
+    </script>
+</body>
+
+</html>
