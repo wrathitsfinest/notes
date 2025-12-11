@@ -454,6 +454,8 @@ body {
     cursor: pointer;
     transition: all var(--transition-normal);
     font-size: var(--font-size-lg);
+    flex-shrink: 0;
+    /* Prevent button from shrinking */
 }
 
 .btn-icon-action:hover {
@@ -597,10 +599,28 @@ body {
 
     .btn-primary {
         padding: var(--spacing-sm);
+        min-width: 44px;
+        height: 44px;
+        width: 44px;
+        border-radius: 50%;
+        justify-content: center;
     }
 
     .btn-primary .btn-icon {
         margin: 0;
+        font-size: var(--font-size-2xl);
+    }
+
+    /* Make delete button smaller on mobile */
+    .btn-icon-action {
+        width: 36px;
+        height: 36px;
+        font-size: var(--font-size-base);
+    }
+
+    /* Reduce editor header padding on mobile */
+    .editor-header {
+        padding: var(--spacing-md) var(--spacing-md);
     }
 
     /* Hide "New Note" text on very small screens */
