@@ -43,6 +43,8 @@ class NotesApp {
         this.mobileMenuBtn = document.getElementById('mobileMenuBtn');
         this.mobileOverlay = document.getElementById('mobileOverlay');
         this.sidebar = document.querySelector('.sidebar');
+        this.newGroupBtn = document.getElementById('newGroupBtn');
+        this.groupSelector = document.getElementById('groupSelector');
     }
 
     // Attach event listeners
@@ -50,6 +52,10 @@ class NotesApp {
         this.newNoteBtn.addEventListener('click', () => this.createNewNote());
         this.deleteNoteBtn.addEventListener('click', () => this.deleteCurrentNote());
         this.backToNotesBtn.addEventListener('click', () => this.backToNotesList());
+
+        // Group management
+        this.newGroupBtn.addEventListener('click', () => this.createNewGroup());
+        this.groupSelector.addEventListener('change', (e) => this.moveCurrentNote(e.target.value));
 
         // Mobile menu
         this.mobileMenuBtn.addEventListener('click', () => this.toggleMobileSidebar());
@@ -156,6 +162,9 @@ class NotesApp {
         this.noteContentInput.value = note.content;
         this.updateLastEdited(note.updatedAt);
 
+        // Populate group selector
+        this.populateGroupSelector(note.groupId);
+
         // Hide notes view and empty state, show editor
         this.emptyState.style.display = 'none';
         this.notesView.style.display = 'none';
@@ -163,6 +172,34 @@ class NotesApp {
 
         // Close mobile sidebar when selecting a note
         this.closeMobileSidebar();
+    }
+
+    // Populate group selector dropdown
+    populateGroupSelector(currentGroupId) {
+        this.groupSelector.innerHTML = '';
+
+        this.groups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.id;
+            option.textContent = group.name;
+            if (group.id === currentGroupId) {
+                option.selected = true;
+            }
+            this.groupSelector.appendChild(option);
+        });
+    }
+
+    // Move current note to a different group
+    moveCurrentNote(newGroupId) {
+        if (!this.currentNoteId || !newGroupId) return;
+
+        const note = this.notes.find(n => n.id === this.currentNoteId);
+        if (note) {
+            note.groupId = newGroupId;
+            note.updatedAt = new Date().toISOString();
+            this.saveNotes();
+            this.updateUI(); // Updates counts
+        }
     }
 
     // Go back to notes list from editor
@@ -257,7 +294,94 @@ class NotesApp {
 
         item.addEventListener('click', () => this.selectGroup(group.id));
 
+        // Context menu for delete (Right click)
+        item.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            this.handleGroupContextMenu(group);
+        });
+
+        // Double click to rename
+        item.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            this.renameGroup(group);
+        });
+
         return item;
+    }
+
+    // Create a new group
+    createNewGroup() {
+        const name = prompt('Enter group name:');
+        if (name && name.trim()) {
+            const newGroup = {
+                id: 'group_' + Date.now(),
+                name: name.trim(),
+                createdAt: new Date().toISOString()
+            };
+            this.groups.push(newGroup);
+            this.saveGroups();
+            this.updateUI();
+            this.selectGroup(newGroup.id);
+        }
+    }
+
+    // Rename group
+    renameGroup(group) {
+        if (group.id === 'default') {
+            alert('Cannot rename the default group.');
+            return;
+        }
+
+        const newName = prompt('Rename group:', group.name);
+        if (newName && newName.trim()) {
+            group.name = newName.trim();
+            this.saveGroups();
+            this.updateUI();
+
+            // Update title if viewing this group
+            if (this.currentGroupId === group.id) {
+                this.notesViewTitle.textContent = group.name;
+            }
+        }
+    }
+
+    // Handle group context menu (Delete)
+    handleGroupContextMenu(group) {
+        if (group.id === 'default') {
+            alert('Cannot delete the default group.');
+            return;
+        }
+
+        if (confirm(`Delete group "${group.name}"? Notes will be moved to "All Notes".`)) {
+            this.deleteGroup(group);
+        }
+    }
+
+    // Delete group
+    deleteGroup(group) {
+        // Move notes to default group
+        let movedCount = 0;
+        this.notes.forEach(note => {
+            if (note.groupId === group.id) {
+                note.groupId = 'default';
+                note.updatedAt = new Date().toISOString();
+                movedCount++;
+            }
+        });
+
+        // Remove group
+        this.groups = this.groups.filter(g => g.id !== group.id);
+
+        // Save everything
+        this.saveNotes();
+        this.saveGroups();
+
+        // Reset view
+        this.selectGroup('default');
+
+        if (movedCount > 0) {
+            alert(`Group deleted. ${movedCount} notes moved to "All Notes".`);
+        }
     }
 
     // Select a group and show its notes

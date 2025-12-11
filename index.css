@@ -326,6 +326,30 @@ body {
    Groups List (Sidebar)
    ============================================ */
 
+.btn-new-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    width: calc(100% - var(--spacing-lg));
+    margin: 0 auto var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: var(--bg-card);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.btn-new-group:hover {
+    background: var(--bg-hover);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
 .groups-list {
     flex: 1;
     overflow-y: auto;
@@ -545,7 +569,25 @@ body {
 
 .editor-actions {
     display: flex;
+    align-items: center;
     gap: var(--spacing-sm);
+}
+
+.group-selector {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    outline: none;
+    cursor: pointer;
+    height: 40px;
+    max-width: 150px;
+}
+
+.group-selector:focus {
+    border-color: var(--color-primary);
 }
 
 .note-content-input {

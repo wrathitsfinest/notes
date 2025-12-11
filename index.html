@@ -57,6 +57,10 @@
                     <h2 class="sidebar-title">Groups</h2>
                     <span class="notes-count" id="groupsCount">0 groups</span>
                 </div>
+                <button class="btn-new-group" id="newGroupBtn" aria-label="New Group">
+                    <span class="btn-icon">+</span>
+                    <span>New Group</span>
+                </button>
                 <div class="groups-list" id="groupsList">
                     <!-- Groups will be dynamically inserted here -->
                 </div>
@@ -91,6 +95,9 @@
                         <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note Title"
                             maxlength="100">
                         <div class="editor-actions">
+                            <select class="group-selector" id="groupSelector" title="Move to group">
+                                <!-- Groups will be populated here -->
+                            </select>
                             <button class="btn-icon-action" id="deleteNoteBtn" title="Delete Note">
                                 <span>🗑️</span>
                             </button>
