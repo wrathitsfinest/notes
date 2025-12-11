@@ -27,13 +27,18 @@ class NotesApp {
     // Initialize DOM elements
     initializeElements() {
         this.newNoteBtn = document.getElementById('newNoteBtn');
-        this.notesList = document.getElementById('notesList');
-        this.notesCount = document.getElementById('notesCount');
+        this.groupsList = document.getElementById('groupsList');
+        this.groupsCount = document.getElementById('groupsCount');
         this.emptyState = document.getElementById('emptyState');
+        this.notesView = document.getElementById('notesView');
+        this.notesViewTitle = document.getElementById('notesViewTitle');
+        this.notesViewCount = document.getElementById('notesViewCount');
+        this.notesGrid = document.getElementById('notesGrid');
         this.editorContainer = document.getElementById('editorContainer');
         this.noteTitleInput = document.getElementById('noteTitleInput');
         this.noteContentInput = document.getElementById('noteContentInput');
         this.deleteNoteBtn = document.getElementById('deleteNoteBtn');
+        this.backToNotesBtn = document.getElementById('backToNotesBtn');
         this.lastEdited = document.getElementById('lastEdited');
         this.mobileMenuBtn = document.getElementById('mobileMenuBtn');
         this.mobileOverlay = document.getElementById('mobileOverlay');
@@ -44,6 +49,7 @@ class NotesApp {
     attachEventListeners() {
         this.newNoteBtn.addEventListener('click', () => this.createNewNote());
         this.deleteNoteBtn.addEventListener('click', () => this.deleteCurrentNote());
+        this.backToNotesBtn.addEventListener('click', () => this.backToNotesList());
 
         // Mobile menu
         this.mobileMenuBtn.addEventListener('click', () => this.toggleMobileSidebar());
@@ -150,15 +156,27 @@ class NotesApp {
         this.noteContentInput.value = note.content;
         this.updateLastEdited(note.updatedAt);
 
-        // Show editor, hide empty state
+        // Hide notes view and empty state, show editor
         this.emptyState.style.display = 'none';
+        this.notesView.style.display = 'none';
         this.editorContainer.style.display = 'flex';
 
         // Close mobile sidebar when selecting a note
         this.closeMobileSidebar();
+    }
 
-        // Update active state in sidebar
-        this.updateUI();
+    // Go back to notes list from editor
+    backToNotesList() {
+        this.currentNoteId = null;
+
+        // Hide editor, show notes view
+        this.editorContainer.style.display = 'none';
+
+        if (this.currentGroupId) {
+            this.renderNotesInGroup(this.currentGroupId);
+        } else {
+            this.emptyState.style.display = 'flex';
+        }
     }
 
     // Schedule auto-save (debounced)
@@ -196,77 +214,124 @@ class NotesApp {
         this.currentNoteId = null;
 
         this.saveNotes();
-        this.closeEditor();
-        this.updateUI();
-    }
-
-    // Close editor
-    closeEditor() {
-        this.emptyState.style.display = 'flex';
-        this.editorContainer.style.display = 'none';
-        this.noteTitleInput.value = '';
-        this.noteContentInput.value = '';
-        this.currentNoteId = null;
+        this.backToNotesList(); // Return to notes list
+        this.updateUI(); // Update groups count
     }
 
     // Update the entire UI
     updateUI() {
-        this.renderNotesList();
-        this.updateNotesCount();
+        this.renderGroupsList();
+        this.updateGroupsCount();
+
+        // Update notes view if a group is selected
+        if (this.currentGroupId) {
+            this.renderNotesInGroup(this.currentGroupId);
+        }
     }
 
-    // Render notes list in sidebar
-    renderNotesList() {
-        this.notesList.innerHTML = '';
+    // Render groups list in sidebar
+    renderGroupsList() {
+        this.groupsList.innerHTML = '';
 
-        if (this.notes.length === 0) {
-            this.notesList.innerHTML = `
-                <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
-                    <p>No notes yet.</p>
-                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">Click "New Note" to get started!</p>
+        this.groups.forEach(group => {
+            const groupItem = this.createGroupItem(group);
+            this.groupsList.appendChild(groupItem);
+        });
+    }
+
+    // Create a single group item element
+    createGroupItem(group) {
+        const item = document.createElement('div');
+        item.className = 'group-item fade-in';
+        if (group.id === this.currentGroupId) {
+            item.classList.add('active');
+        }
+
+        const notesInGroup = this.notes.filter(n => n.groupId === group.id);
+        const count = notesInGroup.length;
+
+        item.innerHTML = `
+            <div class="group-item-name">${this.escapeHtml(group.name)}</div>
+            <div class="group-item-count">${count} ${count === 1 ? 'note' : 'notes'}</div>
+        `;
+
+        item.addEventListener('click', () => this.selectGroup(group.id));
+
+        return item;
+    }
+
+    // Select a group and show its notes
+    selectGroup(groupId) {
+        this.currentGroupId = groupId;
+        this.renderNotesInGroup(groupId);
+        this.renderGroupsList(); // Re-render to update active state
+        this.closeMobileSidebar(); // Close sidebar on mobile
+    }
+
+    // Render notes in main area for selected group
+    renderNotesInGroup(groupId) {
+        const group = this.groups.find(g => g.id === groupId);
+        if (!group) return;
+
+        const notesInGroup = this.notes.filter(n => n.groupId === groupId);
+
+        // Update header
+        this.notesViewTitle.textContent = group.name;
+        this.notesViewCount.textContent = `${notesInGroup.length} ${notesInGroup.length === 1 ? 'note' : 'notes'}`;
+
+        // Hide empty state and editor, show notes view
+        this.emptyState.style.display = 'none';
+        this.editorContainer.style.display = 'none';
+        this.notesView.style.display = 'flex';
+
+        // Render notes grid
+        this.notesGrid.innerHTML = '';
+
+        if (notesInGroup.length === 0) {
+            this.notesGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; padding: 3rem; text-align: center; color: var(--text-muted);">
+                    <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">No notes in this group yet</p>
+                    <p style="font-size: 0.875rem;">Click "New Note" to create one!</p>
                 </div>
             `;
             return;
         }
 
-        this.notes.forEach(note => {
-            const noteItem = this.createNoteItem(note);
-            this.notesList.appendChild(noteItem);
+        notesInGroup.forEach(note => {
+            const noteCard = this.createNoteCard(note);
+            this.notesGrid.appendChild(noteCard);
         });
     }
 
-    // Create a single note item element
-    createNoteItem(note) {
-        const item = document.createElement('div');
-        item.className = 'note-item fade-in';
-        if (note.id === this.currentNoteId) {
-            item.classList.add('active');
-        }
+    // Create a note card for the grid
+    createNoteCard(note) {
+        const card = document.createElement('div');
+        card.className = 'note-card fade-in';
 
-        const preview = note.content.substring(0, 100) || 'No content';
+        const preview = note.content.substring(0, 150) || 'No content';
         const formattedDate = this.formatDate(note.updatedAt);
 
-        item.innerHTML = `
-            <div class="note-item-title">${this.escapeHtml(note.title)}</div>
-            <div class="note-item-preview">${this.escapeHtml(preview)}</div>
-            <div class="note-item-date">${formattedDate}</div>
+        card.innerHTML = `
+            <div class="note-card-title">${this.escapeHtml(note.title)}</div>
+            <div class="note-card-preview">${this.escapeHtml(preview)}</div>
+            <div class="note-card-date">${formattedDate}</div>
         `;
 
-        item.addEventListener('click', () => this.openNote(note.id));
+        card.addEventListener('click', () => this.openNote(note.id));
 
-        return item;
+        return card;
     }
 
-    // Update notes count
-    updateNotesCount() {
-        const count = this.notes.length;
-        this.notesCount.textContent = `${count} ${count === 1 ? 'note' : 'notes'}`;
+    // Update groups count
+    updateGroupsCount() {
+        const count = this.groups.length;
+        this.groupsCount.textContent = `${count} ${count === 1 ? 'group' : 'groups'}`;
     }
 
     // Update last edited timestamp
     updateLastEdited(isoDate) {
         const formatted = this.formatDate(isoDate);
-        this.lastEdited.textContent = `Last edited: ${formatted}`;
+        this.lastEdited.textContent = `Last edited: ${formatted} `;
     }
 
     // Format date to readable string

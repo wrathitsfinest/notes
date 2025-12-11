@@ -50,27 +50,44 @@
         <main class="main-content">
             <!-- Mobile Overlay -->
             <div class="mobile-overlay" id="mobileOverlay"></div>
-            <!-- Sidebar - Notes List -->
+
+            <!-- Sidebar - Groups List -->
             <aside class="sidebar">
                 <div class="sidebar-header">
-                    <h2 class="sidebar-title">All Notes</h2>
-                    <span class="notes-count" id="notesCount">0 notes</span>
+                    <h2 class="sidebar-title">Groups</h2>
+                    <span class="notes-count" id="groupsCount">0 groups</span>
                 </div>
-                <div class="notes-list" id="notesList">
-                    <!-- Notes will be dynamically inserted here -->
+                <div class="groups-list" id="groupsList">
+                    <!-- Groups will be dynamically inserted here -->
                 </div>
             </aside>
 
-            <!-- Editor Area -->
-            <section class="editor-section">
+            <!-- Main Area - Notes or Editor -->
+            <section class="main-area">
+                <!-- Empty State - No Group Selected -->
                 <div class="empty-state" id="emptyState">
-                    <div class="empty-state-icon">✨</div>
-                    <h2 class="empty-state-title">No Note Selected</h2>
-                    <p class="empty-state-text">Select a note from the sidebar or create a new one to get started.</p>
+                    <div class="empty-state-icon">📁</div>
+                    <h2 class="empty-state-title">No Group Selected</h2>
+                    <p class="empty-state-text">Select a group from the sidebar to view its notes.</p>
                 </div>
 
+                <!-- Notes List View -->
+                <div class="notes-view" id="notesView" style="display: none;">
+                    <div class="notes-view-header">
+                        <h2 class="notes-view-title" id="notesViewTitle">All Notes</h2>
+                        <span class="notes-view-count" id="notesViewCount">0 notes</span>
+                    </div>
+                    <div class="notes-grid" id="notesGrid">
+                        <!-- Notes will be dynamically inserted here -->
+                    </div>
+                </div>
+
+                <!-- Editor View -->
                 <div class="editor-container" id="editorContainer" style="display: none;">
                     <div class="editor-header">
+                        <button class="btn-back" id="backToNotesBtn" aria-label="Back to notes">
+                            <span>←</span>
+                        </button>
                         <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note Title"
                             maxlength="100">
                         <div class="editor-actions">
