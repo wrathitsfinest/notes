@@ -5,7 +5,9 @@
 class NotesApp {
     constructor() {
         this.notes = [];
+        this.groups = [];
         this.currentNoteId = null;
+        this.currentGroupId = null;
         this.autoSaveTimeout = null;
         this.isMobileSidebarOpen = false;
 
@@ -16,6 +18,7 @@ class NotesApp {
         this.touchEndY = 0;
 
         this.initializeElements();
+        this.loadGroups();
         this.loadNotes();
         this.attachEventListeners();
         this.updateUI();
@@ -56,6 +59,42 @@ class NotesApp {
         this.noteContentInput.addEventListener('input', () => this.scheduleAutoSave());
     }
 
+    // Load groups from localStorage
+    loadGroups() {
+        const savedGroups = localStorage.getItem('groups');
+        if (savedGroups) {
+            try {
+                this.groups = JSON.parse(savedGroups);
+            } catch (e) {
+                console.error('Error loading groups:', e);
+                this.groups = [];
+            }
+        }
+
+        // Create default group if none exists
+        if (this.groups.length === 0) {
+            const defaultGroup = {
+                id: 'default',
+                name: 'All Notes',
+                createdAt: new Date().toISOString()
+            };
+            this.groups.push(defaultGroup);
+            this.saveGroups();
+        }
+
+        // Set current group to default
+        this.currentGroupId = this.groups[0].id;
+    }
+
+    // Save groups to localStorage
+    saveGroups() {
+        try {
+            localStorage.setItem('groups', JSON.stringify(this.groups));
+        } catch (e) {
+            console.error('Error saving groups:', e);
+        }
+    }
+
     // Load notes from localStorage
     loadNotes() {
         const savedNotes = localStorage.getItem('notes');
@@ -82,6 +121,7 @@ class NotesApp {
     createNewNote() {
         const newNote = {
             id: Date.now(),
+            groupId: this.currentGroupId || 'default',
             title: 'Untitled Note',
             content: '',
             createdAt: new Date().toISOString(),
