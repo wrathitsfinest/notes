@@ -462,10 +462,12 @@ body {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
+    /* Reduced padding */
     cursor: pointer;
     transition: all var(--transition-normal);
-    min-height: 150px;
+    min-height: auto;
+    /* Allow card to shrink */
     display: flex;
     flex-direction: column;
 }
@@ -493,20 +495,22 @@ body {
 .note-card-preview {
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.5;
     flex: 1;
+    white-space: nowrap;
+    /* Force single line */
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
-    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    /* Ensure spacing below */
 }
 
 .note-card-date {
     font-size: var(--font-size-xs);
     color: var(--text-muted);
-    margin-top: var(--spacing-sm);
-    padding-top: var(--spacing-sm);
+    margin-top: 0;
+    padding-top: var(--spacing-xs);
     border-top: 1px solid var(--border-color);
 }
 
