@@ -89,15 +89,22 @@ class NotesApp {
         if (this.groups.length === 0) {
             const defaultGroup = {
                 id: 'default',
-                name: 'All Notes',
+                name: 'General',
                 createdAt: new Date().toISOString()
             };
             this.groups.push(defaultGroup);
             this.saveGroups();
+        } else {
+            // Migration: Rename 'default' group from "All Notes" to "General"
+            const defaultGroup = this.groups.find(g => g.id === 'default');
+            if (defaultGroup && defaultGroup.name === 'All Notes') {
+                defaultGroup.name = 'General';
+                this.saveGroups();
+            }
         }
 
-        // Set current group to default
-        this.currentGroupId = this.groups[0].id;
+        // Set current group to 'all' (Smart View)
+        this.currentGroupId = 'all';
     }
 
     // Save groups to localStorage
@@ -133,9 +140,12 @@ class NotesApp {
 
     // Create a new note
     createNewNote() {
+        // If in "All Notes" view, add to default/General group
+        const targetGroupId = (this.currentGroupId === 'all' || !this.currentGroupId) ? 'default' : this.currentGroupId;
+
         const newNote = {
             id: Date.now(),
-            groupId: this.currentGroupId || 'default',
+            groupId: targetGroupId,
             title: 'Untitled Note',
             content: '',
             createdAt: new Date().toISOString(),
@@ -272,6 +282,24 @@ class NotesApp {
     renderGroupsList() {
         this.groupsList.innerHTML = '';
 
+        // Add "Smart All Notes" item
+        const allNotesItem = document.createElement('div');
+        allNotesItem.className = 'group-item fade-in';
+        if (this.currentGroupId === 'all') {
+            allNotesItem.classList.add('active');
+        }
+
+        // Count all notes
+        const allCount = this.notes.length;
+
+        allNotesItem.innerHTML = `
+            <div class="group-item-name">All Notes</div>
+            <div class="group-item-count">${allCount} ${allCount === 1 ? 'note' : 'notes'}</div>
+        `;
+
+        allNotesItem.addEventListener('click', () => this.selectGroup('all'));
+        this.groupsList.appendChild(allNotesItem);
+
         this.groups.forEach(group => {
             const groupItem = this.createGroupItem(group);
             this.groupsList.appendChild(groupItem);
@@ -396,13 +424,21 @@ class NotesApp {
 
     // Render notes in main area for selected group
     renderNotesInGroup(groupId) {
-        const group = this.groups.find(g => g.id === groupId);
-        if (!group) return;
+        let groupName = '';
+        let notesInGroup = [];
 
-        const notesInGroup = this.notes.filter(n => n.groupId === groupId);
+        if (groupId === 'all') {
+            groupName = 'All Notes';
+            notesInGroup = this.notes; // Show all notes
+        } else {
+            const group = this.groups.find(g => g.id === groupId);
+            if (!group) return;
+            groupName = group.name;
+            notesInGroup = this.notes.filter(n => n.groupId === groupId);
+        }
 
         // Update header
-        this.appTitle.textContent = group.name;
+        this.appTitle.textContent = groupName;
         this.appTitleCount.textContent = `${notesInGroup.length} ${notesInGroup.length === 1 ? 'note' : 'notes'}`;
 
         // Hide empty state and editor, show notes view
