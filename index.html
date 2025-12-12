@@ -37,8 +37,8 @@
                     <span class="hamburger-icon"></span>
                 </button>
                 <h1 class="app-title">
-                    <span class="title-icon">📝</span>
-                    My Notes
+                    <span class="title-text" id="appTitle">My Notes</span>
+                    <span class="title-count" id="appTitleCount"></span>
                 </h1>
                 <button class="btn-primary" id="newNoteBtn" aria-label="New Note">
                     <span class="btn-icon">+</span>
@@ -77,10 +77,6 @@
 
                 <!-- Notes List View -->
                 <div class="notes-view" id="notesView" style="display: none;">
-                    <div class="notes-view-header">
-                        <h2 class="notes-view-title" id="notesViewTitle">All Notes</h2>
-                        <span class="notes-view-count" id="notesViewCount">0 notes</span>
-                    </div>
                     <div class="notes-grid" id="notesGrid">
                         <!-- Notes will be dynamically inserted here -->
                     </div>

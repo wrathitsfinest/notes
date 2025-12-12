@@ -30,9 +30,11 @@ class NotesApp {
         this.groupsList = document.getElementById('groupsList');
         this.groupsCount = document.getElementById('groupsCount');
         this.emptyState = document.getElementById('emptyState');
+        this.groupsCount = document.getElementById('groupsCount');
+        this.emptyState = document.getElementById('emptyState');
         this.notesView = document.getElementById('notesView');
-        this.notesViewTitle = document.getElementById('notesViewTitle');
-        this.notesViewCount = document.getElementById('notesViewCount');
+        this.appTitle = document.getElementById('appTitle');
+        this.appTitleCount = document.getElementById('appTitleCount');
         this.notesGrid = document.getElementById('notesGrid');
         this.editorContainer = document.getElementById('editorContainer');
         this.noteTitleInput = document.getElementById('noteTitleInput');
@@ -340,7 +342,7 @@ class NotesApp {
 
             // Update title if viewing this group
             if (this.currentGroupId === group.id) {
-                this.notesViewTitle.textContent = group.name;
+                this.appTitle.textContent = group.name;
             }
         }
     }
@@ -400,8 +402,8 @@ class NotesApp {
         const notesInGroup = this.notes.filter(n => n.groupId === groupId);
 
         // Update header
-        this.notesViewTitle.textContent = group.name;
-        this.notesViewCount.textContent = `${notesInGroup.length} ${notesInGroup.length === 1 ? 'note' : 'notes'}`;
+        this.appTitle.textContent = group.name;
+        this.appTitleCount.textContent = `(${notesInGroup.length})`;
 
         // Hide empty state and editor, show notes view
         this.emptyState.style.display = 'none';
