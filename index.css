@@ -468,6 +468,8 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--spacing-md);
     align-content: start;
+    grid-auto-rows: min-content;
+    /* Force rows to fit content */
 }
 
 /* Note Card in Grid */
@@ -479,8 +481,8 @@ body {
     /* Reduced padding */
     cursor: pointer;
     transition: all var(--transition-normal);
-    min-height: 100px;
-    /* Ensure minimum height for scrolling */
+    min-height: 135px;
+    /* Safely fit Title+Prev+Date */
     display: flex;
     flex-direction: column;
     overflow: hidden;
