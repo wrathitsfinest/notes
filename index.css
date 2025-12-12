@@ -498,12 +498,12 @@ body {
     line-height: 1.5;
     flex: 1;
     white-space: nowrap;
-    /* Force single line */
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
     margin-bottom: var(--spacing-sm);
-    /* Ensure spacing below */
+    min-width: 0;
+    width: 100%;
 }
 
 .note-card-date {
