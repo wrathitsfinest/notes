@@ -108,6 +108,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--spacing-md);
+    /* Ensure space between items */
 }
 
 .app-title {
@@ -119,7 +121,20 @@ body {
     background-clip: text;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--spacing-sm);
+    flex: 1;
+    /* Take available space */
+    min-width: 0;
+    /* Allow shrinking */
+    padding: 0 var(--spacing-sm);
+    /* Safety padding */
+}
+
+.title-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .title-count {
@@ -128,6 +143,8 @@ body {
     -webkit-text-fill-color: var(--text-muted);
     font-weight: 500;
     margin-left: var(--spacing-xs);
+    flex-shrink: 0;
+    /* Don't shrink the count */
 }
 
 .main-content {
