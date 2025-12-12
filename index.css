@@ -470,6 +470,9 @@ body {
     /* Allow card to shrink */
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    /* Contain children */
+    max-width: 100%;
 }
 
 .note-card:hover {

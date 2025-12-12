@@ -1,7 +1,7 @@
 // Service Worker for My Notes PWA
 // Enables offline functionality and caching
 
-const CACHE_NAME = 'my-notes-v12';
+const CACHE_NAME = 'my-notes-v13';
 const urlsToCache = [
     './',
     './index.html',
