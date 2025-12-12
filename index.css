@@ -456,6 +456,45 @@ body {
     overflow: hidden;
     min-height: 0;
     /* Enable scrolling */
+    position: relative;
+    /* Anchor for FAB */
+}
+
+/* Floating Action Button */
+.fab-new-note {
+    position: absolute;
+    bottom: var(--spacing-xl);
+    right: var(--spacing-xl);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    z-index: 100;
+}
+
+.fab-new-note:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 12px 40px rgba(160, 90, 255, 0.4);
+}
+
+.fab-new-note .btn-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+@media (max-width: 768px) {
+    .fab-new-note {
+        bottom: var(--spacing-lg);
+        right: var(--spacing-lg);
+    }
 }
 
 /* Notes view header styles removed */
