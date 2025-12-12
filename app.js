@@ -243,7 +243,7 @@ class NotesApp {
         note.updatedAt = new Date().toISOString();
 
         this.saveNotes();
-        this.updateUI();
+        // this.updateUI(); // Removed to prevent closing editor on auto-save
         this.updateLastEdited(note.updatedAt);
     }
 
