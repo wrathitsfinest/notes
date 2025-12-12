@@ -85,23 +85,9 @@ class NotesApp {
             }
         }
 
-        // Create default group if none exists
-        if (this.groups.length === 0) {
-            const defaultGroup = {
-                id: 'default',
-                name: 'General',
-                createdAt: new Date().toISOString()
-            };
-            this.groups.push(defaultGroup);
-            this.saveGroups();
-        } else {
-            // Migration: Rename 'default' group from "All Notes" to "General"
-            const defaultGroup = this.groups.find(g => g.id === 'default');
-            if (defaultGroup && defaultGroup.name === 'All Notes') {
-                defaultGroup.name = 'General';
-                this.saveGroups();
-            }
-        }
+        // Remove default/General group if it exists (we only show user groups now)
+        this.groups = this.groups.filter(g => g.id !== 'default');
+        this.saveGroups();
 
         // Set current group to 'all' (Smart View)
         this.currentGroupId = 'all';
@@ -189,6 +175,15 @@ class NotesApp {
     // Populate group selector dropdown
     populateGroupSelector(currentGroupId) {
         this.groupSelector.innerHTML = '';
+
+        // Add "No Category" option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = 'default';
+        defaultOption.textContent = 'No Category';
+        if (currentGroupId === 'default' || !this.groups.find(g => g.id === currentGroupId)) {
+            defaultOption.selected = true;
+        }
+        this.groupSelector.appendChild(defaultOption);
 
         this.groups.forEach(group => {
             const option = document.createElement('option');
