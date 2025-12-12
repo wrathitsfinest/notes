@@ -403,7 +403,7 @@ class NotesApp {
 
         // Update header
         this.appTitle.textContent = group.name;
-        this.appTitleCount.textContent = `(${notesInGroup.length})`;
+        this.appTitleCount.textContent = `${notesInGroup.length} ${notesInGroup.length === 1 ? 'note' : 'notes'}`;
 
         // Hide empty state and editor, show notes view
         this.emptyState.style.display = 'none';
