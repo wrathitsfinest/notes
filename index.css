@@ -168,6 +168,8 @@ body {
     overflow: hidden;
     position: relative;
     width: 100%;
+    min-height: 0;
+    /* Enable scrolling */
 }
 
 /* ============================================
@@ -452,6 +454,8 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
+    /* Enable scrolling */
 }
 
 /* Notes view header styles removed */
@@ -475,13 +479,15 @@ body {
     /* Reduced padding */
     cursor: pointer;
     transition: all var(--transition-normal);
-    min-height: auto;
-    /* Allow card to shrink */
+    min-height: 100px;
+    /* Ensure minimum height for scrolling */
     display: flex;
     flex-direction: column;
     overflow: hidden;
     /* Contain children */
     max-width: 100%;
+    height: auto;
+    /* Allow height to fit content */
 }
 
 .note-card:hover {
@@ -503,6 +509,8 @@ body {
     display: block;
     min-width: 0;
     width: 100%;
+    flex-shrink: 0;
+    /* Prevent title shrinking */
 }
 
 .note-card-preview {
@@ -517,6 +525,8 @@ body {
     margin-bottom: var(--spacing-sm);
     min-width: 0;
     width: 100%;
+    flex-shrink: 0;
+    /* Prevent preview shrinking */
 }
 
 .note-card-date {
@@ -525,6 +535,8 @@ body {
     margin-top: 0;
     padding-top: var(--spacing-xs);
     border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+    /* Prevent date shrinking */
 }
 
 /* ============================================
