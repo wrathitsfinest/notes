@@ -207,7 +207,8 @@ class NotesApp {
             note.groupId = newGroupId;
             note.updatedAt = new Date().toISOString();
             this.saveNotes();
-            this.updateUI(); // Updates counts
+            this.renderGroupsList();
+            this.updateSidebarStats();
         }
     }
 
