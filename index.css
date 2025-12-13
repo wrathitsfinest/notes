@@ -185,6 +185,22 @@ body {
     overflow: hidden;
 }
 
+.sidebar-footer {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    background: var(--bg-tertiary);
+    margin-top: auto;
+    /* Push to bottom if content is short */
+}
+
+.app-version {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    font-family: monospace;
+    opacity: 0.6;
+}
+
 .sidebar-header {
     padding: var(--spacing-lg);
     border-bottom: 1px solid var(--border-color);
