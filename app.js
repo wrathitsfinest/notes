@@ -134,7 +134,7 @@ class NotesApp {
         const newNote = {
             id: Date.now(),
             groupId: targetGroupId,
-            title: 'Untitled Note',
+            title: '',
             content: '',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
@@ -240,7 +240,7 @@ class NotesApp {
         const note = this.notes.find(n => n.id === this.currentNoteId);
         if (!note) return;
 
-        note.title = this.noteTitleInput.value.trim() || 'Untitled Note';
+        note.title = this.noteTitleInput.value.trim();
         note.content = this.noteContentInput.value;
         note.updatedAt = new Date().toISOString();
 
@@ -462,8 +462,10 @@ class NotesApp {
         const preview = note.content.substring(0, 150) || 'No content';
         const formattedDate = this.formatDate(note.updatedAt);
 
+        const displayTitle = note.title ? note.title : 'Untitled Note';
+
         card.innerHTML = `
-            <div class="note-card-title">${this.escapeHtml(note.title)}</div>
+            <div class="note-card-title">${this.escapeHtml(displayTitle)}</div>
             <div class="note-card-preview">${this.escapeHtml(preview)}</div>
             <div class="note-card-date">${formattedDate}</div>
         `;
