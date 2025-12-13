@@ -28,9 +28,8 @@ class NotesApp {
     initializeElements() {
         this.newNoteBtn = document.getElementById('newNoteBtn');
         this.groupsList = document.getElementById('groupsList');
-        this.groupsCount = document.getElementById('groupsCount');
-        this.emptyState = document.getElementById('emptyState');
-        this.groupsCount = document.getElementById('groupsCount');
+        this.sidebarStats = document.getElementById('sidebarStats');
+        this.sidebarHeader = document.getElementById('sidebarHeader');
         this.emptyState = document.getElementById('emptyState');
         this.notesView = document.getElementById('notesView');
         this.appTitle = document.getElementById('appTitle');
@@ -54,6 +53,9 @@ class NotesApp {
         this.newNoteBtn.addEventListener('click', () => this.createNewNote());
         this.deleteNoteBtn.addEventListener('click', () => this.deleteCurrentNote());
         this.backToNotesBtn.addEventListener('click', () => this.backToNotesList());
+
+        // Sidebar Header (All Notes)
+        this.sidebarHeader.addEventListener('click', () => this.selectGroup('all'));
 
         // Group management
         this.newGroupBtn.addEventListener('click', () => this.createNewGroup());
@@ -265,7 +267,7 @@ class NotesApp {
     // Update the entire UI
     updateUI() {
         this.renderGroupsList();
-        this.updateGroupsCount();
+        this.updateSidebarStats();
 
         // Update notes view if a group is selected
         if (this.currentGroupId) {
@@ -277,23 +279,12 @@ class NotesApp {
     renderGroupsList() {
         this.groupsList.innerHTML = '';
 
-        // Add "Smart All Notes" item
-        const allNotesItem = document.createElement('div');
-        allNotesItem.className = 'group-item fade-in';
+        // Handle Active State for Header (All Notes)
         if (this.currentGroupId === 'all') {
-            allNotesItem.classList.add('active');
+            this.sidebarHeader.classList.add('active');
+        } else {
+            this.sidebarHeader.classList.remove('active');
         }
-
-        // Count all notes
-        const allCount = this.notes.length;
-
-        allNotesItem.innerHTML = `
-            <div class="group-item-name">All Notes</div>
-            <div class="group-item-count">${allCount} ${allCount === 1 ? 'note' : 'notes'}</div>
-        `;
-
-        allNotesItem.addEventListener('click', () => this.selectGroup('all'));
-        this.groupsList.appendChild(allNotesItem);
 
         this.groups.forEach(group => {
             const groupItem = this.createGroupItem(group);
@@ -335,19 +326,21 @@ class NotesApp {
     }
 
     // Create a new group
+    // Create a new group
     createNewGroup() {
-        const name = prompt('Enter group name:');
-        if (name && name.trim()) {
-            const newGroup = {
-                id: 'group_' + Date.now(),
-                name: name.trim(),
-                createdAt: new Date().toISOString()
-            };
-            this.groups.push(newGroup);
-            this.saveGroups();
-            this.updateUI();
-            this.selectGroup(newGroup.id);
-        }
+        this.showInputModal('Create New Group', '', (name) => {
+            if (name && name.trim()) {
+                const newGroup = {
+                    id: 'group_' + Date.now(),
+                    name: name.trim(),
+                    createdAt: new Date().toISOString()
+                };
+                this.groups.push(newGroup);
+                this.saveGroups();
+                this.updateUI();
+                this.selectGroup(newGroup.id);
+            }
+        });
     }
 
     // Rename group
@@ -357,17 +350,18 @@ class NotesApp {
             return;
         }
 
-        const newName = prompt('Rename group:', group.name);
-        if (newName && newName.trim()) {
-            group.name = newName.trim();
-            this.saveGroups();
-            this.updateUI();
+        this.showInputModal('Rename Group', group.name, (newName) => {
+            if (newName && newName.trim()) {
+                group.name = newName.trim();
+                this.saveGroups();
+                this.updateUI();
 
-            // Update title if viewing this group
-            if (this.currentGroupId === group.id) {
-                this.appTitle.textContent = group.name;
+                // Update title if viewing this group
+                if (this.currentGroupId === group.id) {
+                    this.appTitle.textContent = group.name;
+                }
             }
-        }
+        });
     }
 
     // Handle group context menu (Delete)
@@ -480,9 +474,11 @@ class NotesApp {
     }
 
     // Update groups count
-    updateGroupsCount() {
-        const count = this.groups.length;
-        this.groupsCount.textContent = `${count} ${count === 1 ? 'group' : 'groups'}`;
+    // Update sidebar stats
+    updateSidebarStats() {
+        const groupsCount = this.groups.length;
+        const notesCount = this.notes.length;
+        this.sidebarStats.textContent = `${groupsCount} ${groupsCount === 1 ? 'group' : 'groups'} / ${notesCount} ${notesCount === 1 ? 'note' : 'notes'}`;
     }
 
     // Update last edited timestamp
@@ -568,6 +564,34 @@ class NotesApp {
                 this.closeMobileSidebar();
             }
         }
+    }
+
+    // Show input modal helper
+    showInputModal(title, defaultValue, callback) {
+        const modal = document.getElementById('inputModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalInput = document.getElementById('modalInput');
+
+        if (!modal) return;
+
+        modalTitle.textContent = title;
+        modalInput.value = defaultValue || '';
+
+        const onClose = () => {
+            modal.removeEventListener('close', onClose);
+            if (modal.returnValue === 'confirm') {
+                callback(modalInput.value);
+            }
+        };
+        modal.addEventListener('close', onClose);
+
+        modal.returnValue = '';
+        modal.showModal();
+
+        setTimeout(() => {
+            modalInput.focus();
+            modalInput.select();
+        }, 50);
     }
 
     // Escape HTML to prevent XSS

@@ -51,9 +51,9 @@
 
             <!-- Sidebar - Groups List -->
             <aside class="sidebar">
-                <div class="sidebar-header">
-                    <h2 class="sidebar-title">Groups</h2>
-                    <span class="notes-count" id="groupsCount">0 groups</span>
+                <div class="sidebar-header" id="sidebarHeader">
+                    <h2 class="sidebar-title">All Notes</h2>
+                    <span class="notes-count" id="sidebarStats">0 groups / 0 notes</span>
                 </div>
                 <button class="btn-new-group" id="newGroupBtn" aria-label="New Group">
                     <span class="btn-icon">+</span>
@@ -64,7 +64,7 @@
                 </div>
                 <!-- Version Footer -->
                 <div class="sidebar-footer">
-                    <span class="app-version">v1.0.21</span>
+                    <span class="app-version">v1.0.23</span>
                 </div>
             </aside>
 
@@ -114,6 +114,18 @@
             </section>
         </main>
     </div>
+
+    <!-- Generic Input Modal -->
+    <dialog class="input-modal" id="inputModal">
+        <form method="dialog">
+            <h3 class="modal-title" id="modalTitle">Enter Value</h3>
+            <input type="text" class="modal-input" id="modalInput" autocomplete="off">
+            <div class="modal-actions">
+                <button value="cancel" class="btn-text">Cancel</button>
+                <button value="confirm" class="btn-primary-small">Confirm</button>
+            </div>
+        </form>
+    </dialog>
 
     <script src="app.js"></script>
 
