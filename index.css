@@ -478,6 +478,7 @@ body {
     /* Truncate to 2 lines */
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -516,7 +517,8 @@ body {
     background: var(--gradient-primary);
     color: white;
     border: none;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 15px rgba(160, 90, 255, 0.3), var(--shadow-lg);
+    /* Bloom */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -941,7 +943,8 @@ body {
         left: 0;
         top: 0;
         bottom: 0;
-        z-index: 100;
+        z-index: 200;
+        /* Ensure it overlaps FAB (z-index 100) */
         transform: translateX(-100%);
         transition: transform var(--transition-normal);
         box-shadow: var(--shadow-lg);
