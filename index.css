@@ -445,7 +445,7 @@ body {
     justify-content: center;
     gap: var(--spacing-xs);
     width: calc(100% - var(--spacing-lg));
-    margin: 0 auto var(--spacing-sm);
+    margin: var(--spacing-md) auto var(--spacing-sm);
     padding: var(--spacing-sm);
     background: var(--bg-card);
     border: 1px dashed var(--border-color);
