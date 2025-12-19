@@ -18,6 +18,7 @@ class NotesApp {
         this.touchEndY = 0;
 
         this.initializeElements();
+        this.initializeTheme();
         this.loadGroups();
         this.loadNotes();
         this.attachEventListeners();
@@ -46,6 +47,7 @@ class NotesApp {
         this.sidebar = document.querySelector('.sidebar');
         this.newGroupBtn = document.getElementById('newGroupBtn');
         this.groupSelector = document.getElementById('groupSelector');
+        this.themeToggle = document.getElementById('themeToggle');
     }
 
     // Attach event listeners
@@ -53,6 +55,7 @@ class NotesApp {
         this.newNoteBtn.addEventListener('click', () => this.createNewNote());
         this.deleteNoteBtn.addEventListener('click', () => this.deleteCurrentNote());
         this.backToNotesBtn.addEventListener('click', () => this.backToNotesList());
+        this.themeToggle.addEventListener('click', () => this.toggleTheme());
 
         // Sidebar Header (All Notes)
         this.sidebarHeader.addEventListener('click', () => this.selectGroup('all'));
@@ -73,6 +76,38 @@ class NotesApp {
         // Auto-save on input
         this.noteTitleInput.addEventListener('input', () => this.scheduleAutoSave());
         this.noteContentInput.addEventListener('input', () => this.scheduleAutoSave());
+    }
+
+    // Initialize Theme
+    initializeTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        // Check local storage or system preference
+        if (savedTheme === 'light' || (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'light');
+            this.updateThemeIcon(true);
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            this.updateThemeIcon(false);
+        }
+    }
+
+    // Toggle Theme
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+
+        this.updateThemeIcon(newTheme === 'light');
+    }
+
+    // Update Theme Icon
+    updateThemeIcon(isLight) {
+        const iconSpan = this.themeToggle.querySelector('.theme-icon');
+        // Show Sun if in Dark Mode (to switch to Light), Moon if in Light Mode (to switch to Dark)
+        iconSpan.textContent = isLight ? '🌙' : '☀️';
+        this.themeToggle.title = isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode';
     }
 
     // Load groups from localStorage
