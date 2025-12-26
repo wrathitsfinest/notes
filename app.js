@@ -48,6 +48,7 @@ class NotesApp {
         this.newGroupBtn = document.getElementById('newGroupBtn');
         this.groupSelector = document.getElementById('groupSelector');
         this.themeToggle = document.getElementById('themeToggle');
+        this.noteColorBtn = document.getElementById('noteColorBtn');
     }
 
     // Attach event listeners
@@ -56,6 +57,7 @@ class NotesApp {
         this.deleteNoteBtn.addEventListener('click', () => this.deleteCurrentNote());
         this.backToNotesBtn.addEventListener('click', () => this.backToNotesList());
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
+        this.noteColorBtn.addEventListener('click', () => this.changeNoteColor());
 
         // Sidebar Header (All Notes)
         this.sidebarHeader.addEventListener('click', () => this.selectGroup('all'));
@@ -171,6 +173,7 @@ class NotesApp {
             groupId: targetGroupId,
             title: '',
             content: '',
+            color: 'none',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
@@ -196,6 +199,7 @@ class NotesApp {
         this.noteTitleInput.value = note.title;
         this.noteContentInput.value = note.content;
         this.updateLastEdited(note.updatedAt);
+        this.editorContainer.setAttribute('data-color', note.color || 'none');
 
         // Populate group selector
         this.populateGroupSelector(note.groupId);
@@ -285,6 +289,20 @@ class NotesApp {
         this.updateLastEdited(note.updatedAt);
     }
 
+    // Change Note Color
+    changeNoteColor() {
+        if (!this.currentNoteId) return;
+        const note = this.notes.find(n => n.id === this.currentNoteId);
+
+        // Use a special flag or just manual DOM manipulation? 
+        // Let's modify showInputModal to handle 'null' name as "Hide Input"
+        this.showInputModal('Choose Color', null, note.color || 'none', (result) => {
+            note.color = result.color;
+            this.saveNotes();
+            this.editorContainer.setAttribute('data-color', note.color);
+        });
+    }
+
     // Delete current note
     deleteCurrentNote() {
         if (!this.currentNoteId) return;
@@ -332,6 +350,7 @@ class NotesApp {
     createGroupItem(group) {
         const item = document.createElement('div');
         item.className = 'group-item fade-in';
+        item.setAttribute('data-color', group.color || 'none');
         if (group.id === this.currentGroupId) {
             item.classList.add('active');
         }
@@ -363,12 +382,14 @@ class NotesApp {
 
     // Create a new group
     // Create a new group
+    // Create a new group
     createNewGroup() {
-        this.showInputModal('Create New Group', '', (name) => {
-            if (name && name.trim()) {
+        this.showInputModal('Create New Group', '', 'none', (result) => {
+            if (result.name) {
                 const newGroup = {
                     id: 'group_' + Date.now(),
-                    name: name.trim(),
+                    name: result.name,
+                    color: result.color || 'none',
                     createdAt: new Date().toISOString()
                 };
                 this.groups.push(newGroup);
@@ -386,9 +407,10 @@ class NotesApp {
             return;
         }
 
-        this.showInputModal('Rename Group', group.name, (newName) => {
-            if (newName && newName.trim()) {
-                group.name = newName.trim();
+        this.showInputModal('Edit Group', group.name, group.color, (result) => {
+            if (result.name) {
+                group.name = result.name;
+                group.color = result.color;
                 this.saveGroups();
                 this.updateUI();
 
@@ -452,14 +474,45 @@ class NotesApp {
         let groupName = '';
         let notesInGroup = [];
 
+        // Determine if this is a custom group that can be edited
+        let isCustomGroup = false;
+
         if (groupId === 'all') {
             groupName = 'All Notes';
             notesInGroup = this.notes; // Show all notes
+        } else if (groupId === 'default') {
+            // Handle Default Group Explicitly if needed, or treated as custom but not editable? 
+            // Default group "No Category" usually shouldn't be renamed/deleted.
+            // But 'default' ID logic in loadGroups filters it out?
+            // Actually, 'default' is the "No Category" concept.
+            // Let's check if the group exists in this.groups.
+            const group = this.groups.find(g => g.id === groupId);
+            if (group) { // It's a user created group
+                groupName = group.name;
+                notesInGroup = this.notes.filter(n => n.groupId === groupId);
+                isCustomGroup = true;
+            } else {
+                // Fallback or "Default" literal if we had one
+                // But wait, 'default' is internal ID for no category.
+                return; // Should not happen if filtered correctly or logic above handles it?
+                // Wait, selectGroup('all') is handled. 
+                // If groupId is 'default' but not in this.groups? 
+                // We don't have a "Visual" group for 'default' in sidebar usually?
+                // Sidebar only shows this.groups.
+            }
         } else {
             const group = this.groups.find(g => g.id === groupId);
             if (!group) return;
             groupName = group.name;
             notesInGroup = this.notes.filter(n => n.groupId === groupId);
+            isCustomGroup = true;
+        }
+
+        // Show/Hide Edit Group Button
+        if (isCustomGroup) {
+            this.editGroupBtn.classList.remove('hidden');
+        } else {
+            this.editGroupBtn.classList.add('hidden');
         }
 
         // Update header
@@ -490,10 +543,21 @@ class NotesApp {
         });
     }
 
+    // Edit current group
+    editCurrentGroup() {
+        if (!this.currentGroupId || this.currentGroupId === 'all' || this.currentGroupId === 'default') return;
+
+        const group = this.groups.find(g => g.id === this.currentGroupId);
+        if (group) {
+            this.renameGroup(group);
+        }
+    }
+
     // Create a note card for the grid
     createNoteCard(note) {
         const card = document.createElement('div');
         card.className = 'note-card fade-in';
+        card.setAttribute('data-color', note.color || 'none');
 
         const preview = note.content.substring(0, 150) || 'No content';
         const formattedDate = this.formatDate(note.updatedAt);
@@ -605,20 +669,39 @@ class NotesApp {
     }
 
     // Show input modal helper
-    showInputModal(title, defaultValue, callback) {
+    showInputModal(title, defaultName, defaultColor, callback) {
         const modal = document.getElementById('inputModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalInput = document.getElementById('modalInput');
+        const inputGroup = modal.querySelector('.input-group');
+        const colorGrid = document.getElementById('modalColorGrid');
 
-        if (!modal) return;
-
+        // Reset state
         modalTitle.textContent = title;
-        modalInput.value = defaultValue || '';
+
+        if (defaultName === null) {
+            inputGroup.style.display = 'none';
+        } else {
+            inputGroup.style.display = 'flex';
+            modalInput.value = defaultName || '';
+        }
+
+        if (defaultColor) {
+            const radio = colorGrid.querySelector(`input[value="${defaultColor}"]`);
+            if (radio) radio.checked = true;
+        } else {
+            const radio = colorGrid.querySelector('input[value="none"]');
+            if (radio) radio.checked = true;
+        }
 
         const onClose = () => {
             modal.removeEventListener('close', onClose);
             if (modal.returnValue === 'confirm') {
-                callback(modalInput.value);
+                const selectedColor = colorGrid.querySelector('input:checked')?.value || 'none';
+                callback({
+                    name: (defaultName === null) ? null : modalInput.value.trim(),
+                    color: selectedColor
+                });
             }
         };
         modal.addEventListener('close', onClose);
@@ -626,10 +709,13 @@ class NotesApp {
         modal.returnValue = '';
         modal.showModal();
 
-        setTimeout(() => {
-            modalInput.focus();
-            modalInput.select();
-        }, 50);
+        // Focus logic
+        if (defaultName !== null) {
+            setTimeout(() => {
+                modalInput.focus();
+                modalInput.select();
+            }, 50);
+        }
     }
 
     // Escape HTML to prevent XSS

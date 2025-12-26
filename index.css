@@ -63,6 +63,17 @@
     --font-size-xl: 1.25rem;
     --font-size-2xl: 1.5rem;
     --font-size-3xl: 2rem;
+
+    /* Design Colors (Dark Mode Defaults - Dark Tints) */
+    --color-none: var(--bg-card);
+    --color-coral: hsl(15, 25%, 20%);
+    --color-peach: hsl(35, 25%, 20%);
+    --color-sand: hsl(55, 20%, 20%);
+    --color-mint: hsl(145, 20%, 20%);
+    --color-sage: hsl(180, 20%, 20%);
+    --color-sky: hsl(210, 25%, 22%);
+    --color-lavender: hsl(250, 20%, 22%);
+    --color-rose: hsl(330, 20%, 22%);
 }
 
 [data-theme="light"] {
@@ -84,6 +95,17 @@
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
     --shadow-glow: 0 0 20px rgba(160, 90, 255, 0.15);
+
+    /* Design Colors (Light Mode - Pastel Tints) */
+    --color-none: #ffffff;
+    --color-coral: hsl(15, 80%, 96%);
+    --color-peach: hsl(35, 80%, 96%);
+    --color-sand: hsl(55, 70%, 96%);
+    --color-mint: hsl(145, 60%, 95%);
+    --color-sage: hsl(180, 60%, 95%);
+    --color-sky: hsl(210, 70%, 96%);
+    --color-lavender: hsl(250, 60%, 97%);
+    --color-rose: hsl(330, 70%, 97%);
 }
 
 /* ============================================
@@ -136,31 +158,36 @@ body {
 
 .app-title {
     font-size: var(--font-size-lg);
-    /* Slightly smaller base size to fit */
     font-weight: 700;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    /* Remove background clip for container to allow inner text gradient */
     display: flex;
     flex-direction: column;
-    /* Stack vertically */
     align-items: center;
     justify-content: center;
     gap: 0;
-    /* Tight gap */
     line-height: 1.2;
     flex: 1;
     min-width: 0;
     padding: 0 var(--spacing-sm);
 }
 
+.title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
 .title-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-    /* Ensure truncation works */
 }
 
 .title-count {
@@ -1055,16 +1082,78 @@ body {
     animation: fadeIn var(--transition-normal);
 }
 
+/* Edit Group Button Specifics */
+#editGroupBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.5;
+    transition: opacity var(--transition-normal), transform var(--transition-normal);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#editGroupBtn:hover {
+    opacity: 1;
+    background: var(--bg-hover);
+    transform: scale(1.1);
+}
+
 /* ============================================
    Input Modal
    ============================================ */
 
-.input-modal {
-    border: none;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
+/* ============================================
+   Color System & Modal
+   ============================================ */
+
+/* Color Utility Classes */
+[data-color="none"] {
     background: var(--bg-card);
-    color: var(--text-primary);
+}
+
+[data-color="coral"] {
+    background: var(--color-coral);
+}
+
+[data-color="peach"] {
+    background: var(--color-peach);
+}
+
+[data-color="sand"] {
+    background: var(--color-sand);
+}
+
+[data-color="mint"] {
+    background: var(--color-mint);
+}
+
+[data-color="sage"] {
+    background: var(--color-sage);
+}
+
+[data-color="sky"] {
+    background: var(--color-sky);
+}
+
+[data-color="lavender"] {
+    background: var(--color-lavender);
+}
+
+[data-color="rose"] {
+    background: var(--color-rose);
+}
+
+/* Modal Styles */
+.input-modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 0;
     box-shadow: var(--shadow-lg);
     width: 90%;
     max-width: 400px;
@@ -1075,10 +1164,23 @@ body {
     backdrop-filter: blur(4px);
 }
 
+.modal-form {
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
 .modal-title {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 0;
     font-size: var(--font-size-lg);
     font-weight: 600;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
 }
 
 .modal-input {
@@ -1088,13 +1190,62 @@ body {
     border-radius: var(--radius-md);
     background: var(--bg-primary);
     color: var(--text-primary);
-    margin-bottom: var(--spacing-lg);
     font-size: var(--font-size-base);
 }
 
 .modal-input:focus {
     border-color: var(--color-primary);
     outline: none;
+}
+
+.section-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.color-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+.color-option {
+    cursor: pointer;
+    position: relative;
+    display: block;
+}
+
+.color-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.color-circle {
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: transform var(--transition-fast), box-shadow var(--transition-normal);
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+.color-option input[type="radio"]:checked+.color-circle {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--color-primary);
+    border-color: transparent;
+}
+
+.color-option:hover .color-circle {
+    transform: scale(1.1);
 }
 
 .modal-actions {
@@ -1131,6 +1282,13 @@ body {
 
 .btn-primary-small:hover {
     background: var(--color-primary-dark);
+}
+
+/* Transitions for dynamic items */
+.note-item,
+.note-card,
+.group-item {
+    transition: background-color var(--transition-normal), transform var(--transition-normal), border-color var(--transition-normal);
 }
 
 @keyframes fadeIn {

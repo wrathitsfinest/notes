@@ -37,9 +37,13 @@
                     <span class="hamburger-icon"></span>
                 </button>
                 <h1 class="app-title">
-                    <span class="title-text" id="appTitle">My Notes</span>
+                    <div class="title-row">
+                        <span class="title-text" id="appTitle">My Notes</span>
+                        <button class="btn-icon-action hidden" id="editGroupBtn" title="Edit Group">
+                            <span>✏️</span>
+                        </button>
+                    </div>
                     <span class="title-count" id="appTitleCount"></span>
-                </h1>
                 </h1>
             </div>
         </header>
@@ -104,6 +108,9 @@
                             <select class="group-selector" id="groupSelector" title="Move to group">
                                 <!-- Groups will be populated here -->
                             </select>
+                            <button class="btn-icon-action" id="noteColorBtn" title="Change Color">
+                                <span>🎨</span>
+                            </button>
                             <button class="btn-icon-action" id="deleteNoteBtn" title="Delete Note">
                                 <span>🗑️</span>
                             </button>
@@ -121,12 +128,60 @@
 
     <!-- Generic Input Modal -->
     <dialog class="input-modal" id="inputModal">
-        <form method="dialog">
+        <form method="dialog" class="modal-form">
             <h3 class="modal-title" id="modalTitle">Enter Value</h3>
-            <input type="text" class="modal-input" id="modalInput" autocomplete="off">
+
+            <div class="input-group">
+                <input type="text" class="modal-input" id="modalInput" autocomplete="off" placeholder="Name">
+            </div>
+
+            <div class="color-picker-section">
+                <label class="section-label">Color</label>
+                <div class="color-grid" id="modalColorGrid">
+                    <!-- Default/None -->
+                    <label class="color-option">
+                        <input type="radio" name="color" value="none" checked>
+                        <span class="color-circle"
+                            style="background: var(--bg-card); border: 2px solid var(--border-color);"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="color" value="coral">
+                        <span class="color-circle" style="background: var(--color-coral);"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="color" value="peach">
+                        <span class="color-circle" style="background: var(--color-peach);"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="color" value="sand">
+                        <span class="color-circle" style="background: var(--color-sand);"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="color" value="mint">
+                        <span class="color-circle" style="background: var(--color-mint);"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="color" value="sage">
+                        <span class="color-circle" style="background: var(--color-sage);"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="color" value="sky">
+                        <span class="color-circle" style="background: var(--color-sky);"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="color" value="lavender">
+                        <span class="color-circle" style="background: var(--color-lavender);"></span>
+                    </label>
+                    <label class="color-option">
+                        <input type="radio" name="color" value="rose">
+                        <span class="color-circle" style="background: var(--color-rose);"></span>
+                    </label>
+                </div>
+            </div>
+
             <div class="modal-actions">
                 <button value="cancel" class="btn-text">Cancel</button>
-                <button value="confirm" class="btn-primary-small">Confirm</button>
+                <button value="confirm" class="btn-primary-small">Save</button>
             </div>
         </form>
     </dialog>
