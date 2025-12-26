@@ -454,7 +454,7 @@ class NotesApp {
         this.saveGroups();
 
         // Reset view
-        this.selectGroup('default');
+        this.selectGroup('all');
 
         if (movedCount > 0) {
             alert(`Group deleted. ${movedCount} notes moved to "All Notes".`);
@@ -481,38 +481,26 @@ class NotesApp {
             groupName = 'All Notes';
             notesInGroup = this.notes; // Show all notes
         } else if (groupId === 'default') {
-            // Handle Default Group Explicitly if needed, or treated as custom but not editable? 
-            // Default group "No Category" usually shouldn't be renamed/deleted.
-            // But 'default' ID logic in loadGroups filters it out?
-            // Actually, 'default' is the "No Category" concept.
-            // Let's check if the group exists in this.groups.
-            const group = this.groups.find(g => g.id === groupId);
-            if (group) { // It's a user created group
-                groupName = group.name;
-                notesInGroup = this.notes.filter(n => n.groupId === groupId);
-                isCustomGroup = true;
-            } else {
-                // Fallback or "Default" literal if we had one
-                // But wait, 'default' is internal ID for no category.
-                return; // Should not happen if filtered correctly or logic above handles it?
-                // Wait, selectGroup('all') is handled. 
-                // If groupId is 'default' but not in this.groups? 
-                // We don't have a "Visual" group for 'default' in sidebar usually?
-                // Sidebar only shows this.groups.
-            }
+            groupName = 'Uncategorized';
+            notesInGroup = this.notes.filter(n => n.groupId === 'default');
         } else {
             const group = this.groups.find(g => g.id === groupId);
-            if (!group) return;
+            if (!group) {
+                this.selectGroup('all');
+                return;
+            }
             groupName = group.name;
             notesInGroup = this.notes.filter(n => n.groupId === groupId);
             isCustomGroup = true;
         }
 
-        // Show/Hide Edit Group Button
-        if (isCustomGroup) {
-            this.editGroupBtn.classList.remove('hidden');
-        } else {
-            this.editGroupBtn.classList.add('hidden');
+        // Show/Hide Edit Group Button (Safely)
+        if (this.editGroupBtn) {
+            if (isCustomGroup) {
+                this.editGroupBtn.classList.remove('hidden');
+            } else {
+                this.editGroupBtn.classList.add('hidden');
+            }
         }
 
         // Update header
