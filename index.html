@@ -39,8 +39,8 @@
                 <h1 class="app-title">
                     <div class="title-row">
                         <span class="title-text" id="appTitle">My Notes</span>
-                        <button class="btn-icon-action hidden" id="editGroupBtn" title="Edit Group">
-                            <span>✏️</span>
+                        <button class="btn-icon-action hidden" id="editGroupBtn" title="Group Settings">
+                            <span>⚙️</span>
                         </button>
                     </div>
                     <span class="title-count" id="appTitleCount"></span>
@@ -180,6 +180,8 @@
             </div>
 
             <div class="modal-actions">
+                <button type="button" id="modalDeleteBtn" class="btn-text btn-danger hidden"
+                    style="margin-right: auto;">Delete Group</button>
                 <button value="cancel" class="btn-text">Cancel</button>
                 <button value="confirm" class="btn-primary-small">Save</button>
             </div>

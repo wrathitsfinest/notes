@@ -363,19 +363,8 @@ class NotesApp {
             <div class="group-item-count">${count} ${count === 1 ? 'note' : 'notes'}</div>
         `;
 
+        // Just simple click selection
         item.addEventListener('click', () => this.selectGroup(group.id));
-
-        // Context menu for delete (Right click)
-        item.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            this.handleGroupContextMenu(group);
-        });
-
-        // Double click to rename
-        item.addEventListener('dblclick', (e) => {
-            e.preventDefault();
-            this.renameGroup(group);
-        });
 
         return item;
     }
@@ -400,30 +389,8 @@ class NotesApp {
         });
     }
 
-    // Rename group
-    renameGroup(group) {
-        if (group.id === 'default') {
-            alert('Cannot rename the default group.');
-            return;
-        }
-
-        this.showInputModal('Edit Group', group.name, group.color, (result) => {
-            if (result.name) {
-                group.name = result.name;
-                group.color = result.color;
-                this.saveGroups();
-                this.updateUI();
-
-                // Update title if viewing this group
-                if (this.currentGroupId === group.id) {
-                    this.appTitle.textContent = group.name;
-                }
-            }
-        });
-    }
-
-    // Handle group context menu (Delete)
-    handleGroupContextMenu(group) {
+    // Delete group with confirmation
+    requestDeleteGroup(group) {
         if (group.id === 'default') {
             alert('Cannot delete the default group.');
             return;
@@ -431,6 +398,9 @@ class NotesApp {
 
         if (confirm(`Delete group "${group.name}"? Notes will be moved to "All Notes".`)) {
             this.deleteGroup(group);
+            // Close modal by finding it (bit hacky but works for dialog close)
+            const modal = document.getElementById('inputModal');
+            if (modal && modal.open) modal.close();
         }
     }
 
@@ -657,15 +627,56 @@ class NotesApp {
     }
 
     // Show input modal helper
-    showInputModal(title, defaultName, defaultColor, callback) {
+    // Rename group
+    renameGroup(group) {
+        if (group.id === 'default') {
+            alert('Cannot rename the default group.');
+            return;
+        }
+
+        this.showInputModal('Edit Group', group.name, group.color, (result) => {
+            if (result.name) {
+                group.name = result.name;
+                group.color = result.color;
+                this.saveGroups();
+                this.updateUI();
+
+                // Update title if viewing this group (and not renamed to something else? Actually object ref suggests direct update is fine but UI update needed)
+                if (this.currentGroupId === group.id) {
+                    this.appTitle.textContent = group.name;
+                }
+            }
+        }, () => {
+            // On Delete Action
+            this.requestDeleteGroup(group);
+        });
+    }
+
+    showInputModal(title, defaultName, defaultColor, callback, onDelete) {
         const modal = document.getElementById('inputModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalInput = document.getElementById('modalInput');
         const inputGroup = modal.querySelector('.input-group');
         const colorGrid = document.getElementById('modalColorGrid');
+        const deleteBtn = document.getElementById('modalDeleteBtn');
 
         // Reset state
         modalTitle.textContent = title;
+
+        // Show/Hide Delete Button
+        if (onDelete) {
+            deleteBtn.classList.remove('hidden');
+        } else {
+            deleteBtn.classList.add('hidden');
+        }
+
+        // Setup Delete Handler (Remove old if any)
+        // Note: Anonymous functions are hard to remove.
+        // Better to clone node or use a single persistent handler that checks a variable?
+        // Or simpler: use `onclick` property assignment for easy overhaul.
+        deleteBtn.onclick = () => {
+            if (onDelete) onDelete();
+        };
 
         if (defaultName === null) {
             inputGroup.style.display = 'none';

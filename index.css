@@ -1281,6 +1281,18 @@ body {
     background: var(--color-primary-dark);
 }
 
+/* Danger Button */
+.btn-danger {
+    color: #ef4444;
+    /* Red-500 */
+}
+
+.btn-danger:hover {
+    color: #dc2626;
+    /* Red-600 */
+    background: rgba(239, 68, 68, 0.1);
+}
+
 /* Transitions for dynamic items */
 .note-item,
 .note-card,
