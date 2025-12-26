@@ -181,16 +181,15 @@ body {
 .mobile-menu-btn {
     position: absolute;
     left: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    /* top handled by flex align? No, need absolute centering if parent is relative and flexible height */
+    /* But header has padding. So left: 0 relative to content box? No, relative to header-content. */
+    /* header-content has no padding, header has. */
 }
 
 /* Group Settings Button Position */
 #editGroupBtn {
     position: absolute;
     right: 0;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 .title-text {
