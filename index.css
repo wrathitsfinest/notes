@@ -156,9 +156,11 @@ body {
     margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    /* Center the title */
     gap: var(--spacing-md);
-    /* Ensure space between items */
+    position: relative;
+    /* Anchor for absolute buttons */
 }
 
 .app-title {
@@ -176,12 +178,18 @@ body {
     padding: 0 var(--spacing-sm);
 }
 
-.title-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    width: 100%;
+.mobile-menu-btn {
+    position: absolute;
+    left: 0;
+    /* top handled by flex align? No, need absolute centering if parent is relative and flexible height */
+    /* But header has padding. So left: 0 relative to content box? No, relative to header-content. */
+    /* header-content has no padding, header has. */
+}
+
+/* Group Settings Button Position */
+#editGroupBtn {
+    position: absolute;
+    right: 0;
 }
 
 .title-text {
