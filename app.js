@@ -49,6 +49,7 @@ class NotesApp {
         this.groupSelector = document.getElementById('groupSelector');
         this.themeToggle = document.getElementById('themeToggle');
         this.noteColorBtn = document.getElementById('noteColorBtn');
+        this.editGroupBtn = document.getElementById('editGroupBtn');
     }
 
     // Attach event listeners
@@ -58,6 +59,7 @@ class NotesApp {
         this.backToNotesBtn.addEventListener('click', () => this.backToNotesList());
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
         this.noteColorBtn.addEventListener('click', () => this.changeNoteColor());
+        if (this.editGroupBtn) this.editGroupBtn.addEventListener('click', () => this.editCurrentGroup());
 
         // Sidebar Header (All Notes)
         this.sidebarHeader.addEventListener('click', () => this.selectGroup('all'));
