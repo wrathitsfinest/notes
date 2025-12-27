@@ -1084,18 +1084,18 @@ body {
 
     /* Modal adaptation for mobile keyboard */
     .input-modal {
-        top: 5%;
-        /* Move even higher to avoid keyboard overlap */
-        transform: translateX(-50%);
-        /* Only horizontal translate */
-        max-height: 90vh;
-        width: 95%;
-        margin: 0 auto;
+        top: 0 !important;
+        bottom: auto !important;
+        margin: 20px auto 0 !important;
+        /* Move to top of screen with margin */
+        transform: translateX(-50%) !important;
+        max-height: 95vh;
+        width: 96%;
     }
 
     .modal-form {
-        padding: var(--spacing-lg);
-        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        gap: var(--spacing-sm);
     }
 
     .color-grid {
