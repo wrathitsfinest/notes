@@ -10,6 +10,7 @@ class NotesApp {
         this.currentGroupId = null;
         this.autoSaveTimeout = null;
         this.isMobileSidebarOpen = false;
+        this.themeRotation = 0;
 
         // Touch gesture tracking
         this.touchStartX = 0;
@@ -102,6 +103,10 @@ class NotesApp {
 
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
+
+        // Rotate the background outline clockwise
+        this.themeRotation += 90;
+        this.themeToggle.style.setProperty('--toggle-rotation', `${this.themeRotation}deg`);
 
         this.updateThemeIcon(newTheme === 'light');
     }
