@@ -154,42 +154,51 @@ body {
 .header-content {
     max-width: 1600px;
     margin: 0 auto;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: center;
-    /* Center the title */
     gap: var(--spacing-md);
     position: relative;
-    /* Anchor for absolute buttons */
+    width: 100%;
 }
 
 .app-title {
     font-size: var(--font-size-lg);
     font-weight: 700;
-    /* Remove background clip for container to allow inner text gradient */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0;
     line-height: 1.2;
-    flex: 1;
     min-width: 0;
     padding: 0 var(--spacing-sm);
+    grid-column: 2;
+    width: 100%;
+    max-width: 65vw;
 }
 
 .mobile-menu-btn {
-    position: absolute;
-    left: 0;
-    /* top handled by flex align? No, need absolute centering if parent is relative and flexible height */
-    /* But header has padding. So left: 0 relative to content box? No, relative to header-content. */
-    /* header-content has no padding, header has. */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    margin-left: calc(var(--spacing-sm) * -1);
+    /* Negative margin to align with edge visually */
+    color: var(--text-primary);
+    grid-column: 1;
+    justify-self: start;
 }
 
 /* Group Settings Button Position */
 #editGroupBtn {
-    position: absolute;
-    right: 0;
+    grid-column: 3;
+    justify-self: end;
+    margin-right: calc(var(--spacing-sm) * -1);
+    /* Negative margin to align with edge visually */
 }
 
 .title-text {
