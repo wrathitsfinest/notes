@@ -149,6 +149,7 @@ body {
     padding: var(--spacing-lg) var(--spacing-xl);
     box-shadow: var(--shadow-sm);
     z-index: 10;
+    transition: background-color var(--transition-normal);
 }
 
 .header-content {
@@ -1176,6 +1177,12 @@ body {
     box-shadow: var(--shadow-lg);
     width: 90%;
     max-width: 400px;
+    /* Proper centering for <dialog> */
+    margin: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .input-modal::backdrop {
@@ -1194,6 +1201,7 @@ body {
     margin-bottom: 0;
     font-size: var(--font-size-lg);
     font-weight: 600;
+    color: var(--text-primary);
 }
 
 .input-group {

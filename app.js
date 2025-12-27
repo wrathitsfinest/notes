@@ -475,6 +475,16 @@ class NotesApp {
             }
         }
 
+        // Update header color
+        const appHeader = document.querySelector('.app-header');
+        const groupColor = (isCustomGroup && this.groups.find(g => g.id === groupId)?.color) || 'none';
+
+        if (groupColor && groupColor !== 'none') {
+            appHeader.setAttribute('data-color', groupColor);
+        } else {
+            appHeader.removeAttribute('data-color');
+        }
+
         // Update header
         this.appTitle.textContent = groupName;
         this.appTitleCount.textContent = `${notesInGroup.length} ${notesInGroup.length === 1 ? 'note' : 'notes'}`;
