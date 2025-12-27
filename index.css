@@ -1082,6 +1082,26 @@ body {
         /* Allow flex item to shrink below content size */
     }
 
+    /* Modal adaptation for mobile keyboard */
+    .input-modal {
+        top: 5%;
+        /* Move even higher to avoid keyboard overlap */
+        transform: translateX(-50%);
+        /* Only horizontal translate */
+        max-height: 90vh;
+        width: 95%;
+        margin: 0 auto;
+    }
+
+    .modal-form {
+        padding: var(--spacing-lg);
+        gap: var(--spacing-md);
+    }
+
+    .color-grid {
+        gap: var(--spacing-sm);
+    }
+
     /* Hide "New Note" text on very small screens */
     @media (max-width: 400px) {
         .btn-primary {
