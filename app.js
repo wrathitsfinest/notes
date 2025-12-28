@@ -51,6 +51,9 @@ class NotesApp {
         this.themeToggle = document.getElementById('themeToggle');
         this.editGroupBtn = document.getElementById('editGroupBtn');
         this.editNoteBtn = document.getElementById('editNoteBtn');
+        this.settingsToggle = document.getElementById('settingsToggle');
+        this.settingsView = document.getElementById('settingsView');
+        this.settingsHomeBtn = document.getElementById('settingsHomeBtn');
         this.modalGroupSection = document.getElementById('modalGroupSection');
     }
 
@@ -61,6 +64,8 @@ class NotesApp {
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
         if (this.editGroupBtn) this.editGroupBtn.addEventListener('click', () => this.editCurrentGroup());
         if (this.editNoteBtn) this.editNoteBtn.addEventListener('click', () => this.editCurrentNote());
+        this.settingsToggle.addEventListener('click', () => this.openSettings());
+        this.settingsHomeBtn.addEventListener('click', () => this.backToMain());
 
         // Sidebar Header (All Notes)
         this.sidebarHeader.addEventListener('click', () => this.selectGroup('all'));
@@ -213,6 +218,7 @@ class NotesApp {
         // Hide notes view and empty state, show editor
         this.emptyState.style.display = 'none';
         this.notesView.style.display = 'none';
+        this.settingsView.style.display = 'none';
         this.editorContainer.style.display = 'flex';
 
         // Show/Hide Header Buttons
@@ -515,6 +521,7 @@ class NotesApp {
         // Hide empty state and editor, show notes view
         this.emptyState.style.display = 'none';
         this.editorContainer.style.display = 'none';
+        this.settingsView.style.display = 'none';
         this.notesView.style.display = 'flex';
 
         // Render notes grid
@@ -625,6 +632,33 @@ class NotesApp {
         this.sidebar.classList.remove('open');
         this.mobileOverlay.classList.remove('active');
         document.body.style.overflow = ''; // Restore body scroll
+    }
+
+    // Settings Navigation
+    openSettings() {
+        // Hide all other views
+        this.emptyState.style.display = 'none';
+        this.notesView.style.display = 'none';
+        this.editorContainer.style.display = 'none';
+
+        // Show settings view
+        this.settingsView.style.display = 'flex';
+
+        // Hide header actions
+        if (this.editGroupBtn) this.editGroupBtn.classList.add('hidden');
+        if (this.editNoteBtn) this.editNoteBtn.classList.add('hidden');
+
+        // Update title
+        this.appTitle.textContent = 'Settings';
+        this.appTitleCount.textContent = '';
+
+        // Close mobile sidebar if open
+        this.closeMobileSidebar();
+    }
+
+    backToMain() {
+        this.settingsView.style.display = 'none';
+        this.selectGroup('all');
     }
 
     // Touch gesture handlers for swipe

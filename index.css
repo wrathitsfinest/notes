@@ -286,6 +286,12 @@ body {
     justify-content: space-between;
 }
 
+.footer-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
 .theme-toggle {
     background: transparent;
     border: none;
@@ -303,6 +309,38 @@ body {
     height: 44px;
     z-index: 1;
     overflow: visible;
+}
+
+.settings-toggle {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    padding: 0;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+}
+
+.settings-toggle:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+}
+
+.settings-toggle:hover svg {
+    transform: rotate(45deg);
+}
+
+.footer-svg {
+    width: 32px;
+    height: 32px;
+    display: block;
+    transition: transform var(--transition-normal);
 }
 
 .theme-toggle::before {
@@ -774,6 +812,54 @@ body {
     overflow: hidden;
 }
 
+/* Settings View */
+.settings-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn var(--transition-normal);
+}
+
+.settings-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.settings-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.settings-content {
+    flex: 1;
+    padding: var(--spacing-2xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-placeholder {
+    color: var(--text-muted);
+    font-size: var(--font-size-lg);
+    text-align: center;
+    opacity: 0.6;
+}
+
 .editor-header {
     padding: var(--spacing-lg) var(--spacing-xl);
     background: var(--bg-secondary);
@@ -953,8 +1039,8 @@ body {
 }
 
 .header-svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     display: block;
 }
 
