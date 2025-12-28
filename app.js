@@ -49,25 +49,24 @@ class NotesApp {
         this.newGroupBtn = document.getElementById('newGroupBtn');
         this.groupSelector = document.getElementById('groupSelector');
         this.themeToggle = document.getElementById('themeToggle');
-        this.noteColorBtn = document.getElementById('noteColorBtn');
         this.editGroupBtn = document.getElementById('editGroupBtn');
+        this.editNoteBtn = document.getElementById('editNoteBtn');
+        this.modalGroupSection = document.getElementById('modalGroupSection');
     }
 
     // Attach event listeners
     attachEventListeners() {
         this.newNoteBtn.addEventListener('click', () => this.createNewNote());
-        this.deleteNoteBtn.addEventListener('click', () => this.deleteCurrentNote());
         this.backToNotesBtn.addEventListener('click', () => this.backToNotesList());
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
-        this.noteColorBtn.addEventListener('click', () => this.changeNoteColor());
         if (this.editGroupBtn) this.editGroupBtn.addEventListener('click', () => this.editCurrentGroup());
+        if (this.editNoteBtn) this.editNoteBtn.addEventListener('click', () => this.editCurrentNote());
 
         // Sidebar Header (All Notes)
         this.sidebarHeader.addEventListener('click', () => this.selectGroup('all'));
 
         // Group management
         this.newGroupBtn.addEventListener('click', () => this.createNewGroup());
-        this.groupSelector.addEventListener('change', (e) => this.moveCurrentNote(e.target.value));
 
         // Mobile menu
         this.mobileMenuBtn.addEventListener('click', () => this.toggleMobileSidebar());
@@ -216,6 +215,10 @@ class NotesApp {
         this.notesView.style.display = 'none';
         this.editorContainer.style.display = 'flex';
 
+        // Show/Hide Header Buttons
+        this.editNoteBtn.classList.remove('hidden');
+        this.editGroupBtn.classList.add('hidden');
+
         // Close mobile sidebar when selecting a note
         this.closeMobileSidebar();
     }
@@ -265,6 +268,10 @@ class NotesApp {
         // Hide editor, show notes view
         this.editorContainer.style.display = 'none';
 
+        // Show/Hide Header Buttons
+        this.editNoteBtn.classList.add('hidden');
+        // Group button visibility handled by renderNotesInGroup
+
         if (this.currentGroupId) {
             this.renderNotesInGroup(this.currentGroupId);
         } else {
@@ -296,18 +303,26 @@ class NotesApp {
         this.updateLastEdited(note.updatedAt);
     }
 
-    // Change Note Color
-    changeNoteColor() {
+    // Edit current note (reusing input modal)
+    editCurrentNote() {
         if (!this.currentNoteId) return;
         const note = this.notes.find(n => n.id === this.currentNoteId);
+        if (!note) return;
 
-        // Use a special flag or just manual DOM manipulation? 
-        // Let's modify showInputModal to handle 'null' name as "Hide Input"
-        this.showInputModal('Choose Color', null, note.color || 'none', (result) => {
+        // Populate and select current group
+        this.populateGroupSelector(note.groupId);
+
+        this.showInputModal('Note Settings', null, note.color || 'none', (result) => {
             note.color = result.color;
+            if (result.groupId) {
+                note.groupId = result.groupId;
+            }
             this.saveNotes();
             this.editorContainer.setAttribute('data-color', note.color);
-        });
+            this.updateUI(); // Update grid preview
+        }, () => {
+            this.deleteCurrentNote();
+        }, 'Delete Note', true);
     }
 
     // Delete current note
@@ -479,6 +494,9 @@ class NotesApp {
                 this.editGroupBtn.classList.add('hidden');
             }
         }
+
+        // Ensure note settings are hidden
+        if (this.editNoteBtn) this.editNoteBtn.classList.add('hidden');
 
         // Update header color
         const appHeader = document.querySelector('.app-header');
@@ -666,19 +684,28 @@ class NotesApp {
         }, () => {
             // On Delete Action
             this.requestDeleteGroup(group);
-        });
+        }, 'Delete Group');
     }
 
-    showInputModal(title, defaultName, defaultColor, callback, onDelete) {
+    showInputModal(title, defaultName, defaultColor, callback, onDelete, deleteLabel = 'Delete', showGroupSelect = false) {
         const modal = document.getElementById('inputModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalInput = document.getElementById('modalInput');
         const inputGroup = modal.querySelector('.input-group');
         const colorGrid = document.getElementById('modalColorGrid');
         const deleteBtn = document.getElementById('modalDeleteBtn');
+        const groupSection = document.getElementById('modalGroupSection');
 
         // Reset state
         modalTitle.textContent = title;
+        deleteBtn.textContent = deleteLabel;
+
+        // Show/Hide Group Selection
+        if (showGroupSelect) {
+            groupSection.classList.remove('hidden');
+        } else {
+            groupSection.classList.add('hidden');
+        }
 
         // Show/Hide Delete Button
         if (onDelete) {
@@ -687,10 +714,7 @@ class NotesApp {
             deleteBtn.classList.add('hidden');
         }
 
-        // Setup Delete Handler (Remove old if any)
-        // Note: Anonymous functions are hard to remove.
-        // Better to clone node or use a single persistent handler that checks a variable?
-        // Or simpler: use `onclick` property assignment for easy overhaul.
+        // Setup Delete Handler
         deleteBtn.onclick = () => {
             if (onDelete) onDelete();
         };
@@ -714,9 +738,12 @@ class NotesApp {
             modal.removeEventListener('close', onClose);
             if (modal.returnValue === 'confirm') {
                 const selectedColor = colorGrid.querySelector('input:checked')?.value || 'none';
+                const selectedGroupId = showGroupSelect ? document.getElementById('groupSelector').value : null;
+
                 callback({
                     name: (defaultName === null) ? null : modalInput.value.trim(),
-                    color: selectedColor
+                    color: selectedColor,
+                    groupId: selectedGroupId
                 });
             }
         };

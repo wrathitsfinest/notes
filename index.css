@@ -183,22 +183,37 @@ body {
 }
 
 .mobile-menu-btn {
-    display: flex;
+    display: none;
+    /* Hidden on desktop */
     align-items: center;
     justify-content: center;
-    background: transparent;
-    border: none;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    padding: var(--spacing-sm);
-    margin-left: calc(var(--spacing-sm) * -1);
-    /* Negative margin to align with edge visually */
+    padding: 0;
+    width: 40px;
+    height: 40px;
     color: var(--text-primary);
     grid-column: 1;
     justify-self: start;
+    transition: all var(--transition-normal);
+    position: relative;
+}
+
+.mobile-menu-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+}
+
+.mobile-menu-btn:active {
+    transform: scale(0.95);
 }
 
 /* Group Settings Button Position */
-#editGroupBtn {
+#editGroupBtn,
+#editNoteBtn {
     grid-column: 3;
     justify-self: end;
     margin-right: calc(var(--spacing-sm) * -1);
@@ -934,6 +949,12 @@ body {
     /* Prevent button from shrinking */
 }
 
+.header-svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
 .btn-icon-action:hover {
     background: var(--bg-hover);
     border-color: var(--color-primary);
@@ -948,25 +969,10 @@ body {
    Mobile Navigation
    ============================================ */
 
-.mobile-menu-btn {
-    display: none;
-    /* Hidden on desktop */
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    position: relative;
-    margin-right: var(--spacing-md);
-}
+/* Reposition/Hide on Desktop handled by media queries if needed, 
+   but unified base style is above or in .btn-icon-action */
 
-.mobile-menu-btn:hover {
-    background: var(--bg-hover);
-    border-color: var(--color-primary);
-}
+/* Base mobile-menu-btn hover is defined at the top */
 
 .hamburger-icon {
     display: block;
@@ -1152,26 +1158,7 @@ body {
     animation: fadeIn var(--transition-normal);
 }
 
-/* Edit Group Button Specifics */
-#editGroupBtn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    opacity: 0.5;
-    transition: opacity var(--transition-normal), transform var(--transition-normal);
-    padding: 4px;
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-#editGroupBtn:hover {
-    opacity: 1;
-    background: var(--bg-hover);
-    transform: scale(1.1);
-}
 
 /* ============================================
    Input Modal
@@ -1245,6 +1232,32 @@ body {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
+}
+
+.group-picker-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.modal-select {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: var(--font-size-md);
+    cursor: pointer;
+    transition: border-color var(--transition-normal);
+}
+
+.modal-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.hidden {
+    display: none !important;
 }
 
 .modal-title {
