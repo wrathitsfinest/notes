@@ -944,8 +944,98 @@ body {
     color: var(--text-primary);
     font-family: var(--font-family);
     line-height: 1.8;
-    resize: none;
     outline: none;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.note-content-input:empty:before {
+    content: attr(placeholder);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Editor Menu & Buttons */
+.editor-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    min-height: 44px;
+}
+
+.editor-menu-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all var(--transition-normal);
+}
+
+.editor-menu-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: scale(1.05);
+}
+
+.editor-svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Checklist Styling */
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: 4px;
+    min-height: 1.8em;
+}
+
+.checklist-checkbox {
+    flex-shrink: 0;
+    margin-top: 0.35em;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-normal);
+    user-select: none;
+}
+
+.line-content {
+    flex: 1;
+    min-width: 0;
+    outline: none;
+}
+
+.checklist-item.checked .checklist-checkbox {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.checklist-item.checked .checklist-checkbox::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.checklist-item.checked {
+    text-decoration: line-through;
+    opacity: 0.5;
 }
 
 .note-content-input::placeholder {

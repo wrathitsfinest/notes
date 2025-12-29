@@ -54,6 +54,7 @@ class NotesApp {
         this.settingsToggle = document.getElementById('settingsToggle');
         this.settingsView = document.getElementById('settingsView');
         this.settingsHomeBtn = document.getElementById('settingsHomeBtn');
+        this.addCheckboxBtn = document.getElementById('addCheckboxBtn');
         this.modalGroupSection = document.getElementById('modalGroupSection');
     }
 
@@ -85,6 +86,17 @@ class NotesApp {
         // Auto-save on input
         this.noteTitleInput.addEventListener('input', () => this.scheduleAutoSave());
         this.noteContentInput.addEventListener('input', () => this.scheduleAutoSave());
+
+        // Editor specific listeners
+        this.addCheckboxBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.toggleCheckboxAtCursor();
+        });
+        this.noteContentInput.addEventListener('click', (e) => this.handleEditorClick(e));
+        this.noteContentInput.addEventListener('keydown', (e) => this.handleEditorKeyDown(e));
+
+        // Ensure blocks are always DIVs
+        document.execCommand('defaultParagraphSeparator', false, 'div');
     }
 
     // Initialize Theme
@@ -208,7 +220,9 @@ class NotesApp {
 
         this.currentNoteId = noteId;
         this.noteTitleInput.value = note.title;
-        this.noteContentInput.value = note.content;
+        // Convert old \n to <br> if no HTML tags found
+        const hasTags = /<[a-z][\s\S]*>/i.test(note.content);
+        this.noteContentInput.innerHTML = hasTags ? note.content : note.content.replace(/\r\n|\r|\n/g, '<br>');
         this.editorContainer.setAttribute('data-color', note.color || 'none');
 
         // Populate group selector
@@ -300,11 +314,286 @@ class NotesApp {
         if (!note) return;
 
         note.title = this.noteTitleInput.value.trim();
-        note.content = this.noteContentInput.value;
+        note.content = this.noteContentInput.innerHTML;
         note.updatedAt = new Date().toISOString();
 
         this.saveNotes();
         // this.updateUI(); // Removed to prevent closing editor on auto-save
+    }
+
+    // Toggle checkbox on current line
+    toggleCheckboxAtCursor() {
+        this.noteContentInput.focus();
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        let node = range.startContainer;
+
+        // Find the line container
+        let line = node.nodeType === 3 ? node.parentNode : node;
+        while (line && line !== this.noteContentInput && !line.classList.contains('checklist-item')) {
+            if (line.tagName === 'DIV' || line.tagName === 'P') break;
+            line = line.parentNode;
+        }
+
+        // Ensure we are in a block
+        if (!line || line === this.noteContentInput) {
+            document.execCommand('formatBlock', false, 'div');
+            const newSelection = window.getSelection();
+            if (newSelection.rangeCount > 0) {
+                line = newSelection.anchorNode;
+                if (line.nodeType === 3) line = line.parentNode;
+                while (line && line !== this.noteContentInput && line.tagName !== 'DIV') {
+                    line = line.parentNode;
+                }
+            }
+        }
+
+        if (!line || line === this.noteContentInput) return;
+
+        // Save relative cursor position
+        let savedOffset = 0;
+        if (range.startContainer.nodeType === 3) {
+            // If in a text node, we need to find its offset relative to the block
+            let currentNode = range.startContainer;
+            savedOffset = range.startOffset;
+
+            // Go backwards through siblings within the line container (effectively .line-content or the div)
+            let sibling = currentNode.previousSibling;
+            while (sibling) {
+                savedOffset += (sibling.textContent || "").length;
+                sibling = sibling.previousSibling;
+            }
+        }
+
+        if (line.classList.contains('checklist-item')) {
+            // Convert back to normal line
+            const lineContent = line.querySelector('.line-content');
+            let content = lineContent ? lineContent.innerHTML : line.innerHTML;
+
+            const text = (lineContent ? lineContent.textContent : line.textContent).replace(/[\u200B\u200C\u200D\uFEFF\xA0]/g, '').trim();
+            if (text === '') {
+                content = '<br>';
+                savedOffset = 0;
+            }
+
+            line.classList.remove('checklist-item', 'checked');
+            line.innerHTML = content;
+
+            // Restore cursor position
+            this.setCursorToOffset(line, savedOffset);
+        } else {
+            // Convert to checklist item
+            const content = line.innerHTML.trim() === '' || line.innerHTML === '<br>' ? '&nbsp;' : line.innerHTML;
+            line.className = 'checklist-item';
+            line.innerHTML = `<span class="checklist-checkbox" contenteditable="false"></span><span class="line-content">${content}</span>`;
+
+            const lineContent = line.querySelector('.line-content');
+
+            // Restore cursor position inside the new content span
+            this.setCursorToOffset(lineContent, savedOffset);
+        }
+
+        this.saveCurrentNote();
+    }
+
+    // Helpers to set cursor position
+    setCursorToStart(el) {
+        if (!el) return;
+        el.focus();
+        const selection = window.getSelection();
+        const range = document.createRange();
+
+        try {
+            // Ensure el has content for cursor to grab
+            if (el.innerHTML === '' || el.innerHTML === '<br>') {
+                el.innerHTML = '&nbsp;';
+            }
+
+            // Aim deep into the first text node
+            let node = el.firstChild;
+            while (node && node.nodeType !== 3) {
+                node = node.firstChild;
+            }
+
+            if (node) {
+                range.setStart(node, 0);
+            } else {
+                range.selectNodeContents(el);
+            }
+
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } catch (e) {
+            console.warn('Set cursor failed, falling back to simple focus');
+        }
+    }
+
+    setCursorToEnd(el) {
+        if (!el) return;
+        const range = document.createRange();
+        const sel = window.getSelection();
+        try {
+            range.selectNodeContents(el);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } catch (e) {
+            el.focus();
+        }
+    }
+
+    // Helper to set cursor at a specific character offset within an element's text content hierarchy
+    setCursorToOffset(container, offset) {
+        if (!container) return;
+        container.focus();
+        const selection = window.getSelection();
+        const range = document.createRange();
+
+        let currentOffset = 0;
+        let targetNode = null;
+        let targetOffset = 0;
+
+        // Recursive function to find the text node at the target offset
+        const findNode = (node) => {
+            if (node.nodeType === 3) { // Text node
+                const len = node.textContent.length;
+                if (currentOffset + len >= offset) {
+                    targetNode = node;
+                    targetOffset = offset - currentOffset;
+                    return true;
+                }
+                currentOffset += len;
+            } else {
+                for (let child of node.childNodes) {
+                    if (findNode(child)) return true;
+                }
+            }
+            return false;
+        };
+
+        findNode(container);
+
+        try {
+            if (targetNode) {
+                range.setStart(targetNode, targetOffset);
+            } else {
+                // If offset is beyond content, just go to the end
+                range.selectNodeContents(container);
+                range.collapse(false);
+            }
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } catch (e) {
+            console.warn('Set offset cursor failed', e);
+        }
+    }
+
+    // Handle special keys in editor
+    handleEditorKeyDown(e) {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        const node = range.startContainer;
+
+        // Find the current checklist item
+        const listItem = (node.nodeType === 3 ? node.parentNode : node).closest('.checklist-item');
+
+        if (e.key === 'Enter') {
+            if (listItem) {
+                const lineContent = listItem.querySelector('.line-content');
+                if (lineContent) {
+                    // Normalize content for check
+                    const text = lineContent.textContent.replace(/[\u200B\u200C\u200D\uFEFF\s\xA0]/g, '').trim();
+
+                    // If current line is empty, "untoggle" the checklist
+                    if (text === '') {
+                        e.preventDefault();
+                        listItem.classList.remove('checklist-item', 'checked');
+                        listItem.innerHTML = (lineContent.innerHTML.trim() === '&nbsp;' || lineContent.innerHTML === '') ? '<br>' : lineContent.innerHTML;
+
+                        // Set cursor to end of the newly un-toggled line
+                        this.setCursorToEnd(listItem);
+                        this.saveCurrentNote();
+                        return;
+                    }
+
+                    // 2. Perform splitting
+                    e.preventDefault();
+
+                    const postRange = range.cloneRange();
+                    postRange.selectNodeContents(lineContent);
+                    postRange.setStart(range.endContainer, range.endOffset);
+                    const contentAfter = postRange.extractContents();
+
+                    // Cleanup current line
+                    if (lineContent.innerHTML.replace(/[\u200B\u200C\u200D\uFEFF\s\xA0]/g, '') === '') {
+                        lineContent.innerHTML = '&nbsp;';
+                    }
+
+                    // 3. Create new list item
+                    const newItem = document.createElement('div');
+                    newItem.className = 'checklist-item';
+                    newItem.innerHTML = `<span class="checklist-checkbox" contenteditable="false"></span><span class="line-content"></span>`;
+                    const newLineContent = newItem.querySelector('.line-content');
+
+                    if (contentAfter.childNodes.length > 0) {
+                        newLineContent.appendChild(contentAfter);
+                    } else {
+                        newLineContent.innerHTML = '&nbsp;';
+                    }
+
+                    listItem.parentNode.insertBefore(newItem, listItem.nextSibling);
+
+                    // 4. Position cursor
+                    setTimeout(() => {
+                        this.setCursorToStart(newLineContent);
+                        newItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 0);
+
+                    this.saveCurrentNote();
+                }
+            }
+        } else if (e.key === 'Backspace') {
+            if (listItem) {
+                const lineContent = listItem.querySelector('.line-content');
+                if (lineContent) {
+                    // Check if cursor is effectively at the start of the line content
+                    const isAtStart = range.startOffset === 0;
+
+                    if (isAtStart) {
+                        const text = lineContent.textContent.replace(/[\u200B\u200C\u200D\uFEFF\s\xA0]/g, '').trim();
+
+                        // If empty, remove checklist styling
+                        if (text === '') {
+                            e.preventDefault();
+                            const content = (lineContent.innerHTML.trim() === '&nbsp;' || lineContent.innerHTML === '') ? '<br>' : lineContent.innerHTML;
+                            listItem.classList.remove('checklist-item', 'checked');
+                            listItem.innerHTML = content;
+
+                            // Restore cursor to the start of the now-normal line
+                            this.setCursorToStart(listItem);
+                            this.saveCurrentNote();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Handle clicks inside editor (specifically for checkboxes)
+    handleEditorClick(e) {
+        if (e.target.classList.contains('checklist-checkbox')) {
+            const item = e.target.closest('.checklist-item');
+            if (item) {
+                item.classList.toggle('checked');
+                this.saveCurrentNote();
+            }
+        }
     }
 
     // Edit current note (reusing input modal)
@@ -557,7 +846,11 @@ class NotesApp {
         card.className = 'note-card fade-in';
         card.setAttribute('data-color', note.color || 'none');
 
-        const preview = note.content.substring(0, 150) || 'No content';
+        // Strip HTML for preview
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = note.content;
+        const plainText = tempDiv.textContent || tempDiv.innerText || '';
+        const preview = plainText.substring(0, 150) || 'No content';
         const formattedDate = this.formatDate(note.updatedAt);
 
         const displayTitle = note.title ? note.title : 'Untitled Note';

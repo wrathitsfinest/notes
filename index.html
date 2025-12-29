@@ -153,7 +153,7 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                             </svg>
                         </button>
                     </div>
-                    <span class="app-version">v1.0.53</span>
+                    <span class="app-version">v1.0.54</span>
                 </div>
             </aside>
 
@@ -186,11 +186,22 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                         <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note Title"
                             maxlength="100">
                     </div>
-                    <textarea class="note-content-input" id="noteContentInput"
-                        placeholder="Start typing your note..."></textarea>
+                    <div class="note-content-input" id="noteContentInput" contenteditable="true"
+                        placeholder="Start typing your note..."></div>
                     <div class="editor-footer">
                         <div class="editor-menu" id="editorMenu">
-                            <!-- Placeholder for future functionality -->
+                            <button class="editor-menu-btn" id="addCheckboxBtn" title="Toggle Checkbox">
+                                <svg class="editor-svg" version="1.0" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 466.000000 437.000000" preserveAspectRatio="xMidYMid meet">
+                                    <g transform="translate(0.000000,437.000000) scale(0.100000,-0.100000)"
+                                        fill="currentColor" stroke="none">
+                                        <path
+                                            d="M1361 3539 c-187 -31 -359 -207 -390 -399 -14 -87 -15 -1780 -1 -1870 30 -192 189 -360 378 -399 74 -15 1850 -15 1924 0 131 27 269 130 331 246 53 99 57 146 57 646 0 404 -2 463 -16 493 -34 72 -129 84 -188 25 l-31 -31 -5 -493 c-4 -441 -7 -495 -22 -523 -25 -46 -77 -94 -123 -115 -38 -18 -91 -19 -963 -19 -761 0 -928 2 -956 14 -46 19 -104 72 -129 120 l-22 41 -3 908 c-1 593 1 921 8 946 15 56 63 116 117 148 l48 28 735 5 c612 4 739 7 756 19 55 36 70 118 32 166 -44 56 -27 55 -785 54 -384 -1 -722 -5 -752 -10z" />
+                                        <path
+                                            d="M3607 3539 c-20 -5 -50 -16 -65 -26 -15 -9 -298 -286 -629 -617 l-602 -600 -238 236 c-170 169 -251 243 -283 257 -154 70 -330 -45 -330 -217 0 -105 16 -126 381 -486 181 -179 344 -334 362 -343 22 -12 55 -18 107 -18 64 0 82 4 120 27 26 15 349 331 746 730 759 760 729 726 727 834 -3 146 -152 259 -296 223z" />
+                                    </g>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
