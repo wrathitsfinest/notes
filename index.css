@@ -976,9 +976,11 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-.last-edited {
-    font-size: var(--font-size-sm);
-    color: var(--text-muted);
+.editor-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    min-height: 24px;
 }
 
 /* ============================================

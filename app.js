@@ -42,7 +42,7 @@ class NotesApp {
         this.noteContentInput = document.getElementById('noteContentInput');
         this.deleteNoteBtn = document.getElementById('deleteNoteBtn');
         this.backToNotesBtn = document.getElementById('backToNotesBtn');
-        this.lastEdited = document.getElementById('lastEdited');
+        this.editorMenu = document.getElementById('editorMenu');
         this.mobileMenuBtn = document.getElementById('mobileMenuBtn');
         this.mobileOverlay = document.getElementById('mobileOverlay');
         this.sidebar = document.querySelector('.sidebar');
@@ -209,7 +209,6 @@ class NotesApp {
         this.currentNoteId = noteId;
         this.noteTitleInput.value = note.title;
         this.noteContentInput.value = note.content;
-        this.updateLastEdited(note.updatedAt);
         this.editorContainer.setAttribute('data-color', note.color || 'none');
 
         // Populate group selector
@@ -306,7 +305,6 @@ class NotesApp {
 
         this.saveNotes();
         // this.updateUI(); // Removed to prevent closing editor on auto-save
-        this.updateLastEdited(note.updatedAt);
     }
 
     // Edit current note (reusing input modal)
@@ -583,11 +581,6 @@ class NotesApp {
         this.sidebarStats.textContent = `${groupsCount} ${groupsCount === 1 ? 'group' : 'groups'} / ${notesCount} ${notesCount === 1 ? 'note' : 'notes'}`;
     }
 
-    // Update last edited timestamp
-    updateLastEdited(isoDate) {
-        const formatted = this.formatDate(isoDate);
-        this.lastEdited.textContent = `Last edited: ${formatted} `;
-    }
 
     // Format date to readable string
     formatDate(isoDate) {
