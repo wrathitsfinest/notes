@@ -2,7 +2,7 @@
   "name": "My Notes - Personal Note-Taking App",
   "short_name": "My Notes",
   "description": "A beautiful and simple note-taking application to capture your thoughts and ideas",
-  "version": "1.0.55",
+  "version": "1.0.56",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f0e14",

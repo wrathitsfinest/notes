@@ -85,7 +85,10 @@ class NotesApp {
 
         // Auto-save on input
         this.noteTitleInput.addEventListener('input', () => this.scheduleAutoSave());
-        this.noteContentInput.addEventListener('input', () => this.scheduleAutoSave());
+        this.noteContentInput.addEventListener('input', () => {
+            this.healChecklistStructure();
+            this.scheduleAutoSave();
+        });
 
         // Editor specific listeners
         this.addCheckboxBtn.addEventListener('click', (e) => {
@@ -95,10 +98,29 @@ class NotesApp {
         this.noteContentInput.addEventListener('click', (e) => this.handleEditorClick(e));
         this.noteContentInput.addEventListener('keydown', (e) => this.handleEditorKeyDown(e));
 
+        // Proactive pointer listener to prevent flicker (using Capture phase for maximum speed)
+        this.noteContentInput.addEventListener('pointerdown', (e) => {
+            const listItem = e.target.closest('.checklist-item');
+            if (listItem && !e.target.closest('.line-content')) {
+                // If clicking checkbox, let it toggle
+                if (e.target.closest('.checklist-checkbox')) return;
+
+                const lineContent = listItem.querySelector('.line-content');
+                if (lineContent) {
+                    e.preventDefault();
+                    this.setCursorToStart(lineContent);
+                    lineContent.focus();
+                }
+            }
+        }, true);
+
         // Selection change listener to keep cursor inside .line-content
         document.addEventListener('selectionchange', () => {
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
+                // If user is selecting text (not just moving caret), don't interfere
+                if (!selection.isCollapsed) return;
+
                 const range = selection.getRangeAt(0);
                 const node = range.startContainer;
 
@@ -118,6 +140,44 @@ class NotesApp {
 
         // Ensure blocks are always DIVs
         document.execCommand('defaultParagraphSeparator', false, 'div');
+    }
+
+    // Healing broken checklist structures
+    healChecklistStructure() {
+        const items = this.noteContentInput.querySelectorAll('.checklist-item');
+        items.forEach(item => {
+            // If .line-content is missing, the browser likely deleted it during a large selection delete
+            if (!item.querySelector('.line-content')) {
+                // Collect any stray text nodes or elements that aren't the checkbox
+                const fragment = document.createDocumentFragment();
+                const checkbox = item.querySelector('.checklist-checkbox');
+
+                Array.from(item.childNodes).forEach(node => {
+                    if (node !== checkbox) {
+                        fragment.appendChild(node);
+                    }
+                });
+
+                // Create a new line-content and put the fragments/text back in
+                const contentSpan = document.createElement('span');
+                contentSpan.className = 'line-content';
+
+                // Use a zero-width space if it's completely empty to maintain focus stability
+                if (fragment.childNodes.length === 0) {
+                    contentSpan.innerHTML = '\u200B';
+                } else {
+                    contentSpan.appendChild(fragment);
+                }
+
+                item.appendChild(contentSpan);
+
+                // If this was the active element's line, restore cursor
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0 && item.contains(selection.anchorNode)) {
+                    this.setCursorToStart(contentSpan);
+                }
+            }
+        });
     }
 
     // Initialize Theme
@@ -607,6 +667,10 @@ class NotesApp {
                     }
                 }
             }
+        } else if (e.key === 'Delete') {
+            // Similar logic for forward delete at the very end of a line content
+            // but the main issue is whole-line deletion via CTRL+A + Backspace/Delete.
+            // We handle that in the 'input' event for structural healing.
         }
     }
 

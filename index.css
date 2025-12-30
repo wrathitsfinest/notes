@@ -994,11 +994,10 @@ body {
 .checklist-item {
     display: flex;
     align-items: flex-start;
-    gap: var(--spacing-md);
     margin-bottom: 4px;
     min-height: 1.8em;
-    user-select: none;
-    /* Prevent cursor landing outside content */
+    caret-color: transparent;
+    /* Hide flicker cursor if it lands in dead zone */
 }
 
 .checklist-checkbox {
@@ -1015,14 +1014,18 @@ body {
     justify-content: center;
     transition: all var(--transition-normal);
     user-select: none;
+    /* Keep checkbox itself unselectable */
 }
 
 .line-content {
     flex: 1;
     min-width: 0;
     outline: none;
+    padding-left: var(--spacing-md);
     user-select: text;
-    /* Re-enable selection for text area */
+    align-self: stretch;
+    caret-color: var(--text-primary);
+    /* Fixed variable name */
 }
 
 .checklist-item.checked .checklist-checkbox {
