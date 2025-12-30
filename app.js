@@ -58,6 +58,7 @@ class NotesApp {
         this.addCheckboxBtn = document.getElementById('addCheckboxBtn');
         this.modalGroupSection = document.getElementById('modalGroupSection');
         this.languageSelect = document.getElementById('languageSelect');
+        this.themeColorPicker = document.getElementById('themeColorPicker');
     }
 
     // Attach event listeners
@@ -70,6 +71,11 @@ class NotesApp {
         this.settingsToggle.addEventListener('click', () => this.openSettings());
         this.settingsHomeBtn.addEventListener('click', () => this.backToMain());
         this.languageSelect.addEventListener('change', (e) => this.handleLanguageChange(e));
+
+        // Theme color picker
+        if (this.themeColorPicker) {
+            this.themeColorPicker.addEventListener('change', (e) => this.handleThemeColorChange(e));
+        }
 
         // Sidebar Header (All Notes)
         this.sidebarHeader.addEventListener('click', () => this.selectGroup('all'));
@@ -194,6 +200,10 @@ class NotesApp {
             document.documentElement.setAttribute('data-theme', 'dark');
             this.updateThemeIcon(false);
         }
+
+        // Initialize color theme
+        const savedColorTheme = localStorage.getItem('colorTheme') || 'cosmic';
+        this.setColorTheme(savedColorTheme);
     }
 
     // Toggle Theme
@@ -1058,6 +1068,11 @@ class NotesApp {
         // Set current language in selector
         this.languageSelect.value = i18n.currentLang;
 
+        // Set current theme color
+        const currentColorTheme = localStorage.getItem('colorTheme') || 'cosmic';
+        const themeRadio = this.themeColorPicker.querySelector(`input[value="${currentColorTheme}"]`);
+        if (themeRadio) themeRadio.checked = true;
+
         // Close mobile sidebar if open
         this.closeMobileSidebar();
     }
@@ -1076,6 +1091,24 @@ class NotesApp {
     backToMain() {
         this.settingsView.style.display = 'none';
         this.selectGroup('all');
+    }
+
+    // Handle theme color change
+    handleThemeColorChange(e) {
+        if (e.target.name === 'themeColor') {
+            const colorTheme = e.target.value;
+            this.setColorTheme(colorTheme);
+            localStorage.setItem('colorTheme', colorTheme);
+        }
+    }
+
+    // Set color theme
+    setColorTheme(theme) {
+        if (theme === 'cosmic') {
+            document.documentElement.removeAttribute('data-color-theme');
+        } else {
+            document.documentElement.setAttribute('data-color-theme', theme);
+        }
     }
 
     // Touch gesture handlers for swipe

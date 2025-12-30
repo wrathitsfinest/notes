@@ -3,17 +3,53 @@
    ============================================ */
 
 :root {
-    /* Color Palette */
-    --color-primary: hsl(260, 85%, 65%);
-    --color-primary-dark: hsl(260, 85%, 55%);
-    --color-primary-light: hsl(260, 85%, 75%);
-    --color-secondary: hsl(320, 85%, 65%);
+    /* Theme Color Variants - Cosmic (Purple to Pink) */
+    --theme-cosmic-primary: hsl(260, 85%, 65%);
+    --theme-cosmic-primary-dark: hsl(260, 85%, 55%);
+    --theme-cosmic-primary-light: hsl(260, 85%, 75%);
+    --theme-cosmic-secondary: hsl(320, 85%, 65%);
+    --theme-cosmic-gradient: linear-gradient(135deg, hsl(260, 85%, 65%) 0%, hsl(320, 85%, 65%) 100%);
+    --theme-cosmic-gradient-hover: linear-gradient(135deg, hsl(260, 85%, 70%) 0%, hsl(320, 85%, 70%) 100%);
+    --theme-cosmic-glow: 0 0 20px rgba(160, 90, 255, 0.3);
+
+    /* Theme Color Variants - Fire (Red to Yellow) */
+    --theme-fire-primary: hsl(0, 85%, 60%);
+    --theme-fire-primary-dark: hsl(0, 85%, 50%);
+    --theme-fire-primary-light: hsl(0, 85%, 70%);
+    --theme-fire-secondary: hsl(45, 95%, 55%);
+    --theme-fire-gradient: linear-gradient(135deg, hsl(0, 85%, 60%) 0%, hsl(45, 95%, 55%) 100%);
+    --theme-fire-gradient-hover: linear-gradient(135deg, hsl(0, 85%, 65%) 0%, hsl(45, 95%, 60%) 100%);
+    --theme-fire-glow: 0 0 20px rgba(255, 90, 60, 0.3);
+
+    /* Theme Color Variants - Ocean (Cyan to Blue) */
+    --theme-ocean-primary: hsl(190, 85%, 55%);
+    --theme-ocean-primary-dark: hsl(190, 85%, 45%);
+    --theme-ocean-primary-light: hsl(190, 85%, 65%);
+    --theme-ocean-secondary: hsl(220, 85%, 60%);
+    --theme-ocean-gradient: linear-gradient(135deg, hsl(190, 85%, 55%) 0%, hsl(220, 85%, 60%) 100%);
+    --theme-ocean-gradient-hover: linear-gradient(135deg, hsl(190, 85%, 60%) 0%, hsl(220, 85%, 65%) 100%);
+    --theme-ocean-glow: 0 0 20px rgba(60, 200, 230, 0.3);
+
+    /* Theme Color Variants - Forest (Green to Teal) */
+    --theme-forest-primary: hsl(140, 70%, 50%);
+    --theme-forest-primary-dark: hsl(140, 70%, 40%);
+    --theme-forest-primary-light: hsl(140, 70%, 60%);
+    --theme-forest-secondary: hsl(170, 75%, 45%);
+    --theme-forest-gradient: linear-gradient(135deg, hsl(140, 70%, 50%) 0%, hsl(170, 75%, 45%) 100%);
+    --theme-forest-gradient-hover: linear-gradient(135deg, hsl(140, 70%, 55%) 0%, hsl(170, 75%, 50%) 100%);
+    --theme-forest-glow: 0 0 20px rgba(60, 200, 130, 0.3);
+
+    /* Active Theme Colors (Default: Cosmic) */
+    --color-primary: var(--theme-cosmic-primary);
+    --color-primary-dark: var(--theme-cosmic-primary-dark);
+    --color-primary-light: var(--theme-cosmic-primary-light);
+    --color-secondary: var(--theme-cosmic-secondary);
     --color-accent: hsl(180, 85%, 60%);
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(260, 85%, 65%) 0%, hsl(320, 85%, 65%) 100%);
+    --gradient-primary: var(--theme-cosmic-gradient);
     --gradient-subtle: linear-gradient(135deg, hsl(260, 20%, 96%) 0%, hsl(320, 20%, 98%) 100%);
-    --gradient-hover: linear-gradient(135deg, hsl(260, 85%, 70%) 0%, hsl(320, 85%, 70%) 100%);
+    --gradient-hover: var(--theme-cosmic-gradient-hover);
 
     /* Dark Theme Colors */
     --bg-primary: hsl(240, 15%, 8%);
@@ -32,7 +68,7 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 20px rgba(160, 90, 255, 0.3);
+    --shadow-glow: var(--theme-cosmic-glow);
 
     /* Spacing */
     --spacing-xs: 0.5rem;
@@ -74,6 +110,39 @@
     --color-sky: hsl(210, 25%, 22%);
     --color-lavender: hsl(250, 20%, 22%);
     --color-rose: hsl(330, 20%, 22%);
+}
+
+/* Fire Theme Variant */
+[data-color-theme="fire"] {
+    --color-primary: var(--theme-fire-primary);
+    --color-primary-dark: var(--theme-fire-primary-dark);
+    --color-primary-light: var(--theme-fire-primary-light);
+    --color-secondary: var(--theme-fire-secondary);
+    --gradient-primary: var(--theme-fire-gradient);
+    --gradient-hover: var(--theme-fire-gradient-hover);
+    --shadow-glow: var(--theme-fire-glow);
+}
+
+/* Ocean Theme Variant */
+[data-color-theme="ocean"] {
+    --color-primary: var(--theme-ocean-primary);
+    --color-primary-dark: var(--theme-ocean-primary-dark);
+    --color-primary-light: var(--theme-ocean-primary-light);
+    --color-secondary: var(--theme-ocean-secondary);
+    --gradient-primary: var(--theme-ocean-gradient);
+    --gradient-hover: var(--theme-ocean-gradient-hover);
+    --shadow-glow: var(--theme-ocean-glow);
+}
+
+/* Forest Theme Variant */
+[data-color-theme="forest"] {
+    --color-primary: var(--theme-forest-primary);
+    --color-primary-dark: var(--theme-forest-primary-dark);
+    --color-primary-light: var(--theme-forest-primary-light);
+    --color-secondary: var(--theme-forest-secondary);
+    --gradient-primary: var(--theme-forest-gradient);
+    --gradient-hover: var(--theme-forest-gradient-hover);
+    --shadow-glow: var(--theme-forest-glow);
 }
 
 [data-theme="light"] {
@@ -1627,6 +1696,63 @@ body {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 2px rgba(160, 90, 255, 0.2);
 }
+
+/* Theme Color Picker */
+.theme-color-picker {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.theme-color-option {
+    cursor: pointer;
+    position: relative;
+    display: block;
+}
+
+.theme-color-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-color-circle {
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: transform var(--transition-fast), box-shadow var(--transition-normal);
+    border: 2px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+.theme-color-circle.theme-cosmic {
+    background: linear-gradient(135deg, hsl(260, 85%, 65%) 0%, hsl(320, 85%, 65%) 100%);
+}
+
+.theme-color-circle.theme-fire {
+    background: linear-gradient(135deg, hsl(0, 85%, 60%) 0%, hsl(45, 95%, 55%) 100%);
+}
+
+.theme-color-circle.theme-ocean {
+    background: linear-gradient(135deg, hsl(190, 85%, 55%) 0%, hsl(220, 85%, 60%) 100%);
+}
+
+.theme-color-circle.theme-forest {
+    background: linear-gradient(135deg, hsl(140, 70%, 50%) 0%, hsl(170, 75%, 45%) 100%);
+}
+
+.theme-color-option input[type="radio"]:checked+.theme-color-circle {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 3px var(--bg-secondary), 0 0 0 5px var(--color-primary);
+    border-color: transparent;
+}
+
+.theme-color-option:hover .theme-color-circle {
+    transform: scale(1.1);
+}
+
 
 
 

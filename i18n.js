@@ -37,6 +37,7 @@ const i18n = {
             settings: "Settings",
             general_settings: "General Settings",
             language: "Language",
+            theme_color: "Theme Color",
 
             // Editor
             note_title_placeholder: "Note Title",
@@ -114,6 +115,7 @@ const i18n = {
             settings: "Настройки",
             general_settings: "Общие настройки",
             language: "Язык",
+            theme_color: "Цветовая тема",
 
             // Editor
             note_title_placeholder: "Заголовок",
