@@ -95,6 +95,27 @@ class NotesApp {
         this.noteContentInput.addEventListener('click', (e) => this.handleEditorClick(e));
         this.noteContentInput.addEventListener('keydown', (e) => this.handleEditorKeyDown(e));
 
+        // Selection change listener to keep cursor inside .line-content
+        document.addEventListener('selectionchange', () => {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const node = range.startContainer;
+
+                // Only act if we are inside the note editor
+                if (this.noteContentInput.contains(node)) {
+                    const listItem = (node.nodeType === 3 ? node.parentNode : node).closest('.checklist-item');
+                    if (listItem) {
+                        const lineContent = listItem.querySelector('.line-content');
+                        // If cursor is NOT inside .line-content, put it inside
+                        if (lineContent && !lineContent.contains(node)) {
+                            this.setCursorToStart(lineContent);
+                        }
+                    }
+                }
+            }
+        });
+
         // Ensure blocks are always DIVs
         document.execCommand('defaultParagraphSeparator', false, 'div');
     }
@@ -385,7 +406,8 @@ class NotesApp {
             this.setCursorToOffset(line, savedOffset);
         } else {
             // Convert to checklist item
-            const content = line.innerHTML.trim() === '' || line.innerHTML === '<br>' ? '&nbsp;' : line.innerHTML;
+            // Use \u200B (Zero-Width Space) as a placeholder - it's invisible but creates a text node for the cursor
+            const content = line.innerHTML.trim() === '' || line.innerHTML === '<br>' ? '\u200B' : line.innerHTML;
             line.className = 'checklist-item';
             line.innerHTML = `<span class="checklist-checkbox" contenteditable="false"></span><span class="line-content">${content}</span>`;
 
@@ -406,18 +428,18 @@ class NotesApp {
         const range = document.createRange();
 
         try {
-            // Ensure el has content for cursor to grab
+            // Ensure there is at least a zero-width space to land on if empty
             if (el.innerHTML === '' || el.innerHTML === '<br>') {
-                el.innerHTML = '&nbsp;';
+                el.innerHTML = '\u200B';
             }
 
-            // Aim deep into the first text node
+            // Find a valid text node
             let node = el.firstChild;
-            while (node && node.nodeType !== 3) {
+            while (node && node.nodeType !== 3 && node.firstChild) {
                 node = node.firstChild;
             }
 
-            if (node) {
+            if (node && node.nodeType === 3) {
                 range.setStart(node, 0);
             } else {
                 range.selectNodeContents(el);
@@ -514,7 +536,9 @@ class NotesApp {
                     if (text === '') {
                         e.preventDefault();
                         listItem.classList.remove('checklist-item', 'checked');
-                        listItem.innerHTML = (lineContent.innerHTML.trim() === '&nbsp;' || lineContent.innerHTML === '') ? '<br>' : lineContent.innerHTML;
+                        // Return to plain text, stripping placeholders
+                        let cleanHtml = lineContent.innerHTML.replace(/[\u200B\u200C\u200D\uFEFF]/g, '').trim();
+                        listItem.innerHTML = (cleanHtml === '' || cleanHtml === '<br>') ? '<br>' : cleanHtml;
 
                         // Set cursor to end of the newly un-toggled line
                         this.setCursorToEnd(listItem);
@@ -532,7 +556,7 @@ class NotesApp {
 
                     // Cleanup current line
                     if (lineContent.innerHTML.replace(/[\u200B\u200C\u200D\uFEFF\s\xA0]/g, '') === '') {
-                        lineContent.innerHTML = '&nbsp;';
+                        lineContent.innerHTML = '\u200B';
                     }
 
                     // 3. Create new list item
@@ -544,7 +568,7 @@ class NotesApp {
                     if (contentAfter.childNodes.length > 0) {
                         newLineContent.appendChild(contentAfter);
                     } else {
-                        newLineContent.innerHTML = '&nbsp;';
+                        newLineContent.innerHTML = '\u200B';
                     }
 
                     listItem.parentNode.insertBefore(newItem, listItem.nextSibling);
@@ -571,7 +595,8 @@ class NotesApp {
                         // If empty, remove checklist styling
                         if (text === '') {
                             e.preventDefault();
-                            const content = (lineContent.innerHTML.trim() === '&nbsp;' || lineContent.innerHTML === '') ? '<br>' : lineContent.innerHTML;
+                            let cleanHtml = lineContent.innerHTML.replace(/[\u200B\u200C\u200D\uFEFF]/g, '').trim();
+                            const content = (cleanHtml === '' || cleanHtml === '<br>') ? '<br>' : cleanHtml;
                             listItem.classList.remove('checklist-item', 'checked');
                             listItem.innerHTML = content;
 
@@ -592,6 +617,22 @@ class NotesApp {
             if (item) {
                 item.classList.toggle('checked');
                 this.saveCurrentNote();
+
+                // After clicking checkbox, ensure focus stays in content
+                const lineContent = item.querySelector('.line-content');
+                if (lineContent) {
+                    this.setCursorToStart(lineContent);
+                }
+            }
+        } else {
+            // Redirect clicks from the checklist-item container or checkbox gap to its content span
+            const listItem = e.target.closest('.checklist-item');
+            if (listItem && !e.target.closest('.line-content')) {
+                const lineContent = listItem.querySelector('.line-content');
+                if (lineContent) {
+                    e.preventDefault();
+                    this.setCursorToStart(lineContent);
+                }
             }
         }
     }

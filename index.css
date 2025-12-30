@@ -997,6 +997,8 @@ body {
     gap: var(--spacing-md);
     margin-bottom: 4px;
     min-height: 1.8em;
+    user-select: none;
+    /* Prevent cursor landing outside content */
 }
 
 .checklist-checkbox {
@@ -1019,6 +1021,8 @@ body {
     flex: 1;
     min-width: 0;
     outline: none;
+    user-select: text;
+    /* Re-enable selection for text area */
 }
 
 .checklist-item.checked .checklist-checkbox {
@@ -1033,8 +1037,11 @@ body {
     font-weight: bold;
 }
 
-.checklist-item.checked {
+.checklist-item.checked .line-content {
     text-decoration: line-through;
+}
+
+.checklist-item.checked {
     opacity: 0.5;
 }
 
