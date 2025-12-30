@@ -36,7 +36,6 @@ const i18n = {
             // Settings
             settings: "Settings",
             general_settings: "General Settings",
-            settings_coming_soon: "Settings functionality coming soon...",
             language: "Language",
 
             // Editor
@@ -114,7 +113,6 @@ const i18n = {
             // Settings
             settings: "Настройки",
             general_settings: "Общие настройки",
-            settings_coming_soon: "Функционал настроек скоро появится...",
             language: "Язык",
 
             // Editor

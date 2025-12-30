@@ -1065,7 +1065,12 @@ class NotesApp {
     handleLanguageChange(e) {
         const newLang = e.target.value;
         i18n.setLanguage(newLang);
-        this.updateUI();
+
+        // Only update UI if not in settings view
+        const isInSettings = this.settingsView.style.display !== 'none';
+        if (!isInSettings) {
+            this.updateUI();
+        }
     }
 
     backToMain() {
