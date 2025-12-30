@@ -33,14 +33,16 @@
         <!-- Header -->
         <header class="app-header">
             <div class="header-content">
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu" data-i18n="toggle_menu"
+                    data-i18n-target="aria">
                     <span class="hamburger-icon"></span>
                 </button>
                 <h1 class="app-title">
-                    <span class="title-text" id="appTitle">My Notes</span>
+                    <span class="title-text" id="appTitle" data-i18n="app_title">My Notes</span>
                     <span class="title-count" id="appTitleCount"></span>
                 </h1>
-                <button class="btn-icon-action hidden" id="editGroupBtn" title="Group Settings">
+                <button class="btn-icon-action hidden" id="editGroupBtn" title="Group Settings"
+                    data-i18n="group_settings" data-i18n-target="title">
                     <svg class="header-svg" version="1.0" xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 783.000000 784.000000" preserveAspectRatio="xMidYMid meet">
                         <g transform="translate(0.000000,784.000000) scale(0.100000,-0.100000)"
@@ -52,7 +54,8 @@
                         </g>
                     </svg>
                 </button>
-                <button class="btn-icon-action hidden" id="editNoteBtn" title="Note Settings">
+                <button class="btn-icon-action hidden" id="editNoteBtn" title="Note Settings" data-i18n="note_settings"
+                    data-i18n-target="title">
                     <svg class="header-svg" version="1.0" xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 783.000000 784.000000" preserveAspectRatio="xMidYMid meet">
                         <g transform="translate(0.000000,784.000000) scale(0.100000,-0.100000)"
@@ -81,12 +84,13 @@
             <!-- Sidebar - Groups List -->
             <aside class="sidebar">
                 <div class="sidebar-header" id="sidebarHeader">
-                    <h2 class="sidebar-title">All Notes</h2>
-                    <span class="notes-count" id="sidebarStats">0 groups / 0 notes</span>
+                    <h2 class="sidebar-title" data-i18n="all_notes">All Notes</h2>
+                    <span class="notes-count" id="sidebarStats"></span>
                 </div>
-                <button class="btn-new-group" id="newGroupBtn" aria-label="New Group">
+                <button class="btn-new-group" id="newGroupBtn" aria-label="New Group" data-i18n="new_group"
+                    data-i18n-target="aria">
                     <span class="btn-icon">+</span>
-                    <span>New Group</span>
+                    <span data-i18n="new_group">New Group</span>
                 </button>
                 <div class="groups-list" id="groupsList">
                     <!-- Groups will be dynamically inserted here -->
@@ -98,7 +102,8 @@
                             title="Toggle Theme">
                             <span class="theme-icon">☀️</span>
                         </button>
-                        <button class="settings-toggle" id="settingsToggle" aria-label="Open Settings" title="Settings">
+                        <button class="settings-toggle" id="settingsToggle" aria-label="Open Settings" title="Settings"
+                            data-i18n="settings" data-i18n-target="title">
                             <svg class="footer-svg" version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 784.000000 1168.000000" preserveAspectRatio="xMidYMid meet">
                                 <g transform="translate(0.000000,1168.000000) scale(0.100000,-0.100000)"
@@ -153,7 +158,7 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                             </svg>
                         </button>
                     </div>
-                    <span class="app-version">v1.0.56</span>
+                    <span class="app-version">v1.0.57</span>
                 </div>
             </aside>
 
@@ -162,8 +167,9 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                 <!-- Empty State - No Group Selected -->
                 <div class="empty-state" id="emptyState">
                     <div class="empty-state-icon">📁</div>
-                    <h2 class="empty-state-title">No Group Selected</h2>
-                    <p class="empty-state-text">Select a group from the sidebar to view its notes.</p>
+                    <h2 class="empty-state-title" data-i18n="empty_state_title">No Group Selected</h2>
+                    <p class="empty-state-text" data-i18n="empty_state_text">Select a group from the sidebar to view its
+                        notes.</p>
                 </div>
 
                 <!-- Notes List View -->
@@ -172,7 +178,8 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                         <!-- Notes will be dynamically inserted here -->
                     </div>
                     <!-- Floating Action Button for New Note -->
-                    <button class="fab-new-note" id="newNoteBtn" aria-label="New Note">
+                    <button class="fab-new-note" id="newNoteBtn" aria-label="New Note" data-i18n="new_note"
+                        data-i18n-target="aria">
                         <span class="btn-icon">+</span>
                     </button>
                 </div>
@@ -180,17 +187,19 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                 <!-- Editor View -->
                 <div class="editor-container" id="editorContainer" style="display: none;">
                     <div class="editor-header">
-                        <button class="btn-back" id="backToNotesBtn" aria-label="Back to notes">
+                        <button class="btn-back" id="backToNotesBtn" aria-label="Back to notes"
+                            data-i18n="back_to_notes" data-i18n-target="aria">
                             <span>←</span>
                         </button>
                         <input type="text" class="note-title-input" id="noteTitleInput" placeholder="Note Title"
-                            maxlength="100">
+                            maxlength="100" data-i18n="note_title_placeholder">
                     </div>
                     <div class="note-content-input" id="noteContentInput" contenteditable="true"
-                        placeholder="Start typing your note..."></div>
+                        placeholder="Start typing your note..." data-i18n="note_content_placeholder"></div>
                     <div class="editor-footer">
                         <div class="editor-menu" id="editorMenu">
-                            <button class="editor-menu-btn" id="addCheckboxBtn" title="Toggle Checkbox">
+                            <button class="editor-menu-btn" id="addCheckboxBtn" title="Toggle Checkbox"
+                                data-i18n="toggle_checkbox" data-i18n-target="title">
                                 <svg class="editor-svg" version="1.0" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 466.000000 437.000000" preserveAspectRatio="xMidYMid meet">
                                     <g transform="translate(0.000000,437.000000) scale(0.100000,-0.100000)"
@@ -209,7 +218,8 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                 <!-- Settings View -->
                 <div class="settings-view" id="settingsView" style="display: none;">
                     <div class="settings-header">
-                        <button class="btn-icon-action" id="settingsHomeBtn" title="Back to main">
+                        <button class="btn-icon-action" id="settingsHomeBtn" title="Back to main"
+                            data-i18n="back_to_main" data-i18n-target="title">
                             <svg class="header-svg" version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 784.000000 1168.000000" preserveAspectRatio="xMidYMid meet">
                                 <g transform="translate(0.000000,1168.000000) scale(0.100000,-0.100000)"
@@ -231,10 +241,18 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                                 </g>
                             </svg>
                         </button>
-                        <h2 class="settings-title">General Settings</h2>
+                        <h2 class="settings-title" data-i18n="general_settings">General Settings</h2>
                     </div>
                     <div class="settings-content">
-                        <p class="settings-placeholder">Settings functionality coming soon...</p>
+                        <div class="settings-item">
+                            <label class="settings-label" data-i18n="language">Language</label>
+                            <select class="settings-select" id="languageSelect">
+                                <option value="en">English</option>
+                                <option value="ru">Русский</option>
+                            </select>
+                        </div>
+                        <p class="settings-placeholder" data-i18n="settings_coming_soon">Settings functionality coming
+                            soon...</p>
                     </div>
                 </div>
             </section>
@@ -244,21 +262,22 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
     <!-- Generic Input Modal -->
     <dialog class="input-modal" id="inputModal">
         <form method="dialog" class="modal-form">
-            <h3 class="modal-title" id="modalTitle">Enter Value</h3>
+            <h3 class="modal-title" id="modalTitle" data-i18n="enter_value">Enter Value</h3>
 
             <div class="input-group">
-                <input type="text" class="modal-input" id="modalInput" autocomplete="off" placeholder="Name">
+                <input type="text" class="modal-input" id="modalInput" autocomplete="off" placeholder="Name"
+                    data-i18n="modal_name_placeholder">
             </div>
 
             <div class="group-picker-section hidden" id="modalGroupSection">
-                <label class="section-label">Category</label>
+                <label class="section-label" data-i18n="label_category">Category</label>
                 <select class="modal-select" id="groupSelector">
                     <!-- Groups will be populated here -->
                 </select>
             </div>
 
             <div class="color-picker-section">
-                <label class="section-label">Color</label>
+                <label class="section-label" data-i18n="label_color">Color</label>
                 <div class="color-grid" id="modalColorGrid">
                     <!-- Default/None -->
                     <label class="color-option">
@@ -304,12 +323,13 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
             <div class="modal-actions">
                 <button type="button" id="modalDeleteBtn" class="btn-text btn-danger hidden"
                     style="margin-right: auto;">Delete Group</button>
-                <button value="cancel" class="btn-text">Cancel</button>
-                <button value="confirm" class="btn-primary-small">Save</button>
+                <button value="cancel" class="btn-text" data-i18n="cancel">Cancel</button>
+                <button value="confirm" class="btn-primary-small" data-i18n="save">Save</button>
             </div>
         </form>
     </dialog>
 
+    <script src="i18n.js"></script>
     <script src="app.js"></script>
 
     <!-- Service Worker Registration -->

@@ -23,6 +23,7 @@ class NotesApp {
         this.loadGroups();
         this.loadNotes();
         this.attachEventListeners();
+        i18n.init();
         this.updateUI();
     }
 
@@ -56,6 +57,7 @@ class NotesApp {
         this.settingsHomeBtn = document.getElementById('settingsHomeBtn');
         this.addCheckboxBtn = document.getElementById('addCheckboxBtn');
         this.modalGroupSection = document.getElementById('modalGroupSection');
+        this.languageSelect = document.getElementById('languageSelect');
     }
 
     // Attach event listeners
@@ -67,6 +69,7 @@ class NotesApp {
         if (this.editNoteBtn) this.editNoteBtn.addEventListener('click', () => this.editCurrentNote());
         this.settingsToggle.addEventListener('click', () => this.openSettings());
         this.settingsHomeBtn.addEventListener('click', () => this.backToMain());
+        this.languageSelect.addEventListener('change', (e) => this.handleLanguageChange(e));
 
         // Sidebar Header (All Notes)
         this.sidebarHeader.addEventListener('click', () => this.selectGroup('all'));
@@ -213,7 +216,7 @@ class NotesApp {
         const iconSpan = this.themeToggle.querySelector('.theme-icon');
         // Show Sun if in Dark Mode (to switch to Light), Moon if in Light Mode (to switch to Dark)
         iconSpan.textContent = isLight ? '🌙' : '☀️';
-        this.themeToggle.title = isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+        this.themeToggle.title = isLight ? i18n.t('switch_to_dark') : i18n.t('switch_to_light');
     }
 
     // Load groups from localStorage
@@ -330,7 +333,7 @@ class NotesApp {
         // Add "No Category" option
         const defaultOption = document.createElement('option');
         defaultOption.value = 'default';
-        defaultOption.textContent = 'No Category';
+        defaultOption.textContent = i18n.t('no_category');
         if (currentGroupId === 'default' || !this.groups.find(g => g.id === currentGroupId)) {
             defaultOption.selected = true;
         }
@@ -710,7 +713,7 @@ class NotesApp {
         // Populate and select current group
         this.populateGroupSelector(note.groupId);
 
-        this.showInputModal('Note Settings', null, note.color || 'none', (result) => {
+        this.showInputModal(i18n.t('note_settings'), null, note.color || 'none', (result) => {
             note.color = result.color;
             if (result.groupId) {
                 note.groupId = result.groupId;
@@ -720,14 +723,14 @@ class NotesApp {
             this.updateUI(); // Update grid preview
         }, () => {
             this.deleteCurrentNote();
-        }, 'Delete Note', true);
+        }, i18n.t('delete_note'), true);
     }
 
     // Delete current note
     deleteCurrentNote() {
         if (!this.currentNoteId) return;
 
-        const confirmed = confirm('Are you sure you want to delete this note?');
+        const confirmed = confirm(i18n.t('confirm_delete_note'));
         if (!confirmed) return;
 
         this.notes = this.notes.filter(n => n.id !== this.currentNoteId);
@@ -777,10 +780,11 @@ class NotesApp {
 
         const notesInGroup = this.notes.filter(n => n.groupId === group.id);
         const count = notesInGroup.length;
+        const countText = count + ' ' + (count === 1 ? i18n.t('note_singular') : i18n.t('note_plural'));
 
         item.innerHTML = `
             <div class="group-item-name">${this.escapeHtml(group.name)}</div>
-            <div class="group-item-count">${count} ${count === 1 ? 'note' : 'notes'}</div>
+            <div class="group-item-count">${countText}</div>
         `;
 
         // Just simple click selection
@@ -793,7 +797,7 @@ class NotesApp {
     // Create a new group
     // Create a new group
     createNewGroup() {
-        this.showInputModal('Create New Group', '', 'none', (result) => {
+        this.showInputModal(i18n.t('create_new_group'), '', 'none', (result) => {
             if (result.name) {
                 const newGroup = {
                     id: 'group_' + Date.now(),
@@ -812,11 +816,11 @@ class NotesApp {
     // Delete group with confirmation
     requestDeleteGroup(group) {
         if (group.id === 'default') {
-            alert('Cannot delete the default group.');
+            alert(i18n.t('alert_cannot_delete_default'));
             return;
         }
 
-        if (confirm(`Delete group "${group.name}"? Notes will be moved to "All Notes".`)) {
+        if (confirm(i18n.t('confirm_delete_group', { name: group.name }))) {
             this.deleteGroup(group);
             // Close modal by finding it (bit hacky but works for dialog close)
             const modal = document.getElementById('inputModal');
@@ -847,7 +851,7 @@ class NotesApp {
         this.selectGroup('all');
 
         if (movedCount > 0) {
-            alert(`Group deleted. ${movedCount} notes moved to "All Notes".`);
+            alert(i18n.t('alert_group_deleted_moved', { count: movedCount }));
         }
     }
 
@@ -868,10 +872,10 @@ class NotesApp {
         let isCustomGroup = false;
 
         if (groupId === 'all') {
-            groupName = 'All Notes';
+            groupName = i18n.t('all_notes');
             notesInGroup = this.notes; // Show all notes
         } else if (groupId === 'default') {
-            groupName = 'Uncategorized';
+            groupName = i18n.t('uncategorized');
             notesInGroup = this.notes.filter(n => n.groupId === 'default');
         } else {
             const group = this.groups.find(g => g.id === groupId);
@@ -908,7 +912,8 @@ class NotesApp {
 
         // Update header
         this.appTitle.textContent = groupName;
-        this.appTitleCount.textContent = `${notesInGroup.length} ${notesInGroup.length === 1 ? 'note' : 'notes'}`;
+        const countText = notesInGroup.length === 1 ? i18n.t('note_singular') : i18n.t('note_plural');
+        this.appTitleCount.textContent = `${notesInGroup.length} ${countText}`;
 
         // Hide empty state and editor, show notes view
         this.emptyState.style.display = 'none';
@@ -922,8 +927,8 @@ class NotesApp {
         if (notesInGroup.length === 0) {
             this.notesGrid.innerHTML = `
                 <div style="grid-column: 1 / -1; padding: 3rem; text-align: center; color: var(--text-muted);">
-                    <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">No notes in this group yet</p>
-                    <p style="font-size: 0.875rem;">Click "New Note" to create one!</p>
+                    <p style="font-size: 1.125rem; margin-bottom: 0.5rem;">${i18n.t('no_notes_in_group')}</p>
+                    <p style="font-size: 0.875rem;">${i18n.t('click_new_note')}</p>
                 </div>
             `;
             return;
@@ -955,10 +960,10 @@ class NotesApp {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = note.content;
         const plainText = tempDiv.textContent || tempDiv.innerText || '';
-        const preview = plainText.substring(0, 150) || 'No content';
+        const preview = plainText.substring(0, 150) || i18n.t('no_content');
         const formattedDate = this.formatDate(note.updatedAt);
 
-        const displayTitle = note.title ? note.title : 'Untitled Note';
+        const displayTitle = note.title ? note.title : i18n.t('untitled_note');
 
         card.innerHTML = `
             <div class="note-card-title">${this.escapeHtml(displayTitle)}</div>
@@ -976,7 +981,14 @@ class NotesApp {
     updateSidebarStats() {
         const groupsCount = this.groups.length;
         const notesCount = this.notes.length;
-        this.sidebarStats.textContent = `${groupsCount} ${groupsCount === 1 ? 'group' : 'groups'} / ${notesCount} ${notesCount === 1 ? 'note' : 'notes'}`;
+
+        const groupsText = groupsCount === 1 ? i18n.t('group_singular') : i18n.t('group_plural');
+        const notesText = notesCount === 1 ? i18n.t('note_singular') : i18n.t('note_plural');
+
+        this.sidebarStats.textContent = i18n.t('sidebar_stats', {
+            groups: `${groupsCount} ${groupsText}`,
+            notes: `${notesCount} ${notesText}`
+        });
     }
 
 
@@ -989,10 +1001,10 @@ class NotesApp {
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
-        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        if (diffMins < 1) return i18n.t('just_now');
+        if (diffMins < 60) return i18n.t(diffMins > 1 ? 'mins_ago' : 'min_ago', { count: diffMins });
+        if (diffHours < 24) return i18n.t(diffHours > 1 ? 'hours_ago' : 'hour_ago', { count: diffHours });
+        if (diffDays < 7) return i18n.t(diffDays > 1 ? 'days_ago' : 'day_ago', { count: diffDays });
 
         return date.toLocaleDateString('en-US', {
             month: 'short',
@@ -1040,11 +1052,20 @@ class NotesApp {
         if (this.editNoteBtn) this.editNoteBtn.classList.add('hidden');
 
         // Update title
-        this.appTitle.textContent = 'Settings';
+        this.appTitle.textContent = i18n.t('settings');
         this.appTitleCount.textContent = '';
+
+        // Set current language in selector
+        this.languageSelect.value = i18n.currentLang;
 
         // Close mobile sidebar if open
         this.closeMobileSidebar();
+    }
+
+    handleLanguageChange(e) {
+        const newLang = e.target.value;
+        i18n.setLanguage(newLang);
+        this.updateUI();
     }
 
     backToMain() {
@@ -1090,11 +1111,11 @@ class NotesApp {
     // Rename group
     renameGroup(group) {
         if (group.id === 'default') {
-            alert('Cannot rename the default group.');
+            alert(i18n.t('alert_cannot_rename_default'));
             return;
         }
 
-        this.showInputModal('Edit Group', group.name, group.color, (result) => {
+        this.showInputModal(i18n.t('edit_group'), group.name, group.color, (result) => {
             if (result.name) {
                 group.name = result.name;
                 group.color = result.color;
@@ -1109,7 +1130,7 @@ class NotesApp {
         }, () => {
             // On Delete Action
             this.requestDeleteGroup(group);
-        }, 'Delete Group');
+        }, i18n.t('delete_group'));
     }
 
     showInputModal(title, defaultName, defaultColor, callback, onDelete, deleteLabel = 'Delete', showGroupSelect = false) {
