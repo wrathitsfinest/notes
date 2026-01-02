@@ -1269,34 +1269,37 @@ class NotesApp {
             const groupColor = header.getAttribute('data-color');
 
             // If we are in the editor and it has a custom color, we might want to use that 
+            // If we are in the editor and it has a custom color, we might want to use that
             // but the header is the top-most visual element.
             const editorVisible = this.editorContainer.style.display === 'flex';
             const note = this.currentNoteId ? this.notes.find(n => n.id === this.currentNoteId) : null;
 
             if (editorVisible && note && note.color && note.color !== 'none') {
-                // Match note color if editing
-                const temp = document.createElement('div');
-                temp.style.color = `var(--color-${note.color})`;
-                document.body.appendChild(temp);
-                targetColor = getComputedStyle(temp).color;
-                document.body.removeChild(temp);
+                targetColor = this.resolveColorVariable(`--color-${note.color}`);
             } else if (groupColor && groupColor !== 'none') {
-                // If header is color-coded by a group, match that exactly
-                targetColor = getComputedStyle(header).backgroundColor;
+                // Resolve the group's specific background color variable (if it's using one)
+                // or just use the target brand color
+                targetColor = this.resolveColorVariable(`--color-primary`);
             } else {
-                // Otherwise, use the current theme's primary vibrant color (brand color)
-                // We use a temporary element to resolve the CSS variable to an actual color string
-                const temp = document.createElement('div');
-                temp.style.color = 'var(--color-primary)';
-                document.body.appendChild(temp);
-                targetColor = getComputedStyle(temp).color;
-                document.body.removeChild(temp);
+                targetColor = this.resolveColorVariable('--color-primary');
             }
 
             if (targetColor) {
                 metaThemeColor.setAttribute('content', targetColor);
             }
         }, 50);
+    }
+
+    // Helper to resolve a CSS variable to an actual color string without transitions
+    resolveColorVariable(variableName) {
+        const temp = document.createElement('div');
+        temp.style.color = `var(${variableName})`;
+        temp.style.visibility = 'hidden';
+        temp.style.position = 'absolute';
+        document.body.appendChild(temp);
+        const color = getComputedStyle(temp).color;
+        document.body.removeChild(temp);
+        return color;
     }
 
     // Touch gesture handlers for swipe
