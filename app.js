@@ -877,6 +877,10 @@ class NotesApp {
         this.saveNotes();
         this.backToNotesList(); // Return to notes list
         this.updateUI(); // Update groups count
+
+        // Close modal if open
+        const modal = document.getElementById('inputModal');
+        if (modal && modal.open) modal.close();
     }
 
     // Update the entire UI
@@ -886,7 +890,12 @@ class NotesApp {
 
         // Update notes view if a group is selected
         if (this.currentGroupId) {
-            this.renderNotesInGroup(this.currentGroupId);
+            // Check if we are currently in editor or settings view
+            const isEditorVisible = this.editorContainer.style.display === 'flex';
+            const isSettingsVisible = this.settingsView.style.display === 'flex';
+
+            // If in editor or settings, update the grid in background but don't switch view
+            this.renderNotesInGroup(this.currentGroupId, isEditorVisible || isSettingsVisible);
         }
     }
 
@@ -1002,7 +1011,7 @@ class NotesApp {
     }
 
     // Render notes in main area for selected group
-    renderNotesInGroup(groupId) {
+    renderNotesInGroup(groupId, skipViewSwitch = false) {
         let groupName = '';
         let notesInGroup = [];
 
@@ -1026,38 +1035,40 @@ class NotesApp {
             isCustomGroup = true;
         }
 
-        // Show/Hide Edit Group Button (Safely)
-        if (this.editGroupBtn) {
-            if (isCustomGroup) {
-                this.editGroupBtn.classList.remove('hidden');
-            } else {
-                this.editGroupBtn.classList.add('hidden');
+        if (!skipViewSwitch) {
+            // Show/Hide Edit Group Button (Safely)
+            if (this.editGroupBtn) {
+                if (isCustomGroup) {
+                    this.editGroupBtn.classList.remove('hidden');
+                } else {
+                    this.editGroupBtn.classList.add('hidden');
+                }
             }
+
+            // Ensure note settings are hidden
+            if (this.editNoteBtn) this.editNoteBtn.classList.add('hidden');
+
+            // Update header color
+            const appHeader = document.querySelector('.app-header');
+            const groupColor = (isCustomGroup && this.groups.find(g => g.id === groupId)?.color) || 'none';
+
+            if (groupColor && groupColor !== 'none') {
+                appHeader.setAttribute('data-color', groupColor);
+            } else {
+                appHeader.removeAttribute('data-color');
+            }
+
+            // Update header
+            this.appTitle.textContent = groupName;
+            const countText = notesInGroup.length === 1 ? i18n.t('note_singular') : i18n.t('note_plural');
+            this.appTitleCount.textContent = `${notesInGroup.length} ${countText}`;
+
+            // Hide empty state and editor, show notes view
+            this.emptyState.style.display = 'none';
+            this.editorContainer.style.display = 'none';
+            this.settingsView.style.display = 'none';
+            this.notesView.style.display = 'flex';
         }
-
-        // Ensure note settings are hidden
-        if (this.editNoteBtn) this.editNoteBtn.classList.add('hidden');
-
-        // Update header color
-        const appHeader = document.querySelector('.app-header');
-        const groupColor = (isCustomGroup && this.groups.find(g => g.id === groupId)?.color) || 'none';
-
-        if (groupColor && groupColor !== 'none') {
-            appHeader.setAttribute('data-color', groupColor);
-        } else {
-            appHeader.removeAttribute('data-color');
-        }
-
-        // Update header
-        this.appTitle.textContent = groupName;
-        const countText = notesInGroup.length === 1 ? i18n.t('note_singular') : i18n.t('note_plural');
-        this.appTitleCount.textContent = `${notesInGroup.length} ${countText}`;
-
-        // Hide empty state and editor, show notes view
-        this.emptyState.style.display = 'none';
-        this.editorContainer.style.display = 'none';
-        this.settingsView.style.display = 'none';
-        this.notesView.style.display = 'flex';
 
         // Render notes grid
         this.notesGrid.innerHTML = '';
