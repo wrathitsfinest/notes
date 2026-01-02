@@ -1772,14 +1772,12 @@ body {
     display: block;
     width: 32px;
     height: 32px;
-    border-radius: 50%;
-    transition: transform var(--transition-fast), box-shadow var(--transition-normal);
+    transition: transform var(--transition-fast), border-color var(--transition-normal);
     border: 2px solid var(--border-color);
     box-sizing: border-box;
-    /* Force Hardware Acceleration for perfect circular clipping */
-    transform: translateZ(0);
-    overflow: hidden;
-    background-clip: padding-box;
+    /* The Ultimate Fix: clip-path forces a pixel-perfect circle clipping */
+    clip-path: circle(50%);
+    position: relative;
 }
 
 .theme-color-circle.theme-cosmic {
@@ -1799,20 +1797,22 @@ body {
 }
 
 .theme-color-option input[type="radio"]:checked+.theme-color-circle {
-    transform: scale(1.1) translateZ(0);
-    box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--color-primary);
-    border-color: transparent;
-    outline: none !important;
+    transform: scale(1.1);
+    border-color: var(--color-primary);
 }
 
-/* Hard reset for pseudo-elements to prevent any hidden squares */
-.theme-color-option input[type="radio"]:checked+.theme-color-circle::after,
-.theme-color-option input[type="radio"]:checked+.theme-color-circle::before,
-.theme-color-circle::after,
-.theme-color-circle::before {
-    display: none !important;
-    content: none !important;
-    opacity: 0 !important;
+/* Use a dedicated pseudo-element for the selection ring to prevent shadow artifacts */
+.theme-color-option input[type="radio"]:checked+.theme-color-circle::before {
+    display: block !important;
+    content: '' !important;
+    position: absolute;
+    inset: -4px;
+    border: 2px solid var(--color-primary);
+    border-radius: 50%;
+    opacity: 1 !important;
+    clip-path: none !important;
+    /* Ring must be outside the clip-path */
+    z-index: -1;
 }
 
 .theme-color-option:hover .theme-color-circle {
