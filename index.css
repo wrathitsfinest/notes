@@ -1772,12 +1772,13 @@ body {
     display: block;
     width: 32px;
     height: 32px;
-    transition: transform var(--transition-fast), border-color var(--transition-normal);
+    border-radius: 50%;
+    /* The Zero-Bleed Fix: Gradient stops exactly at the inner border edge */
+    background-clip: padding-box !important;
     border: 2px solid var(--border-color);
-    box-sizing: border-box;
-    /* The Ultimate Fix: clip-path forces a pixel-perfect circle clipping */
-    clip-path: circle(50%);
+    transition: all var(--transition-normal);
     position: relative;
+    box-sizing: border-box;
 }
 
 .theme-color-circle.theme-cosmic {
@@ -1797,22 +1798,9 @@ body {
 }
 
 .theme-color-option input[type="radio"]:checked+.theme-color-circle {
-    transform: scale(1.1);
-    border-color: var(--color-primary);
-}
-
-/* Use a dedicated pseudo-element for the selection ring to prevent shadow artifacts */
-.theme-color-option input[type="radio"]:checked+.theme-color-circle::before {
-    display: block !important;
-    content: '' !important;
-    position: absolute;
-    inset: -4px;
-    border: 2px solid var(--color-primary);
-    border-radius: 50%;
-    opacity: 1 !important;
-    clip-path: none !important;
-    /* Ring must be outside the clip-path */
-    z-index: -1;
+    transform: scale(1.15);
+    border: 3px solid var(--bg-secondary);
+    box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 .theme-color-option:hover .theme-color-circle {
