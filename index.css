@@ -1628,10 +1628,7 @@ body {
 }
 
 .color-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
+    display: none;
 }
 
 .color-circle {
@@ -1765,10 +1762,7 @@ body {
 }
 
 .theme-color-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
+    display: none;
 }
 
 .theme-color-circle {
@@ -1798,6 +1792,7 @@ body {
 }
 
 .theme-color-option input[type="radio"]:checked+.theme-color-circle {
+    transform: scale(1.1);
     box-shadow: 0 0 0 3px var(--bg-secondary), 0 0 0 5px var(--color-primary);
     border-color: transparent;
 }
