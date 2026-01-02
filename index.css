@@ -1762,7 +1762,10 @@ body {
 }
 
 .theme-color-option input[type="radio"] {
-    display: none;
+    display: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none !important;
 }
 
 .theme-color-circle {
@@ -1795,6 +1798,14 @@ body {
     transform: scale(1.1);
     box-shadow: 0 0 0 3px var(--bg-secondary), 0 0 0 5px var(--color-primary);
     border-color: transparent;
+    outline: none !important;
+}
+
+/* Ensure no pseudo-element squares are added by browser defaults */
+.theme-color-option input[type="radio"]:checked+.theme-color-circle::after,
+.theme-color-option input[type="radio"]:checked+.theme-color-circle::before {
+    display: none !important;
+    content: none !important;
 }
 
 .theme-color-option:hover .theme-color-circle {
