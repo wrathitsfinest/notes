@@ -1776,6 +1776,10 @@ body {
     transition: transform var(--transition-fast), box-shadow var(--transition-normal);
     border: 2px solid var(--border-color);
     box-sizing: border-box;
+    /* Force Hardware Acceleration for perfect circular clipping */
+    transform: translateZ(0);
+    overflow: hidden;
+    background-clip: padding-box;
 }
 
 .theme-color-circle.theme-cosmic {
@@ -1795,17 +1799,20 @@ body {
 }
 
 .theme-color-option input[type="radio"]:checked+.theme-color-circle {
-    transform: scale(1.1);
-    box-shadow: 0 0 0 3px var(--bg-secondary), 0 0 0 5px var(--color-primary);
+    transform: scale(1.1) translateZ(0);
+    box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--color-primary);
     border-color: transparent;
     outline: none !important;
 }
 
-/* Ensure no pseudo-element squares are added by browser defaults */
+/* Hard reset for pseudo-elements to prevent any hidden squares */
 .theme-color-option input[type="radio"]:checked+.theme-color-circle::after,
-.theme-color-option input[type="radio"]:checked+.theme-color-circle::before {
+.theme-color-option input[type="radio"]:checked+.theme-color-circle::before,
+.theme-color-circle::after,
+.theme-color-circle::before {
     display: none !important;
     content: none !important;
+    opacity: 0 !important;
 }
 
 .theme-color-option:hover .theme-color-circle {
