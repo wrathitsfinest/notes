@@ -219,6 +219,7 @@ class NotesApp {
         this.themeToggle.style.setProperty('--toggle-rotation', `${this.themeRotation}deg`);
 
         this.updateThemeIcon(newTheme === 'light');
+        this.updateStatusBarColor();
     }
 
     // Update Theme Icon
@@ -462,6 +463,7 @@ class NotesApp {
 
         // Close mobile sidebar when selecting a note
         this.closeMobileSidebar();
+        this.updateStatusBarColor();
     }
 
     // Populate group selector dropdown
@@ -518,6 +520,8 @@ class NotesApp {
         } else {
             this.emptyState.style.display = 'flex';
         }
+
+        this.updateStatusBarColor();
     }
 
     // Schedule auto-save (debounced)
@@ -859,6 +863,7 @@ class NotesApp {
             this.saveNotes();
             this.editorContainer.setAttribute('data-color', note.color);
             this.updateUI(); // Update grid preview
+            this.updateStatusBarColor();
         }, () => {
             this.deleteCurrentNote();
         }, i18n.t('delete_note'), true);
@@ -1008,6 +1013,7 @@ class NotesApp {
         this.renderNotesInGroup(groupId);
         this.renderGroupsList(); // Re-render to update active state
         this.closeMobileSidebar(); // Close sidebar on mobile
+        this.updateStatusBarColor();
     }
 
     // Render notes in main area for selected group
@@ -1248,6 +1254,49 @@ class NotesApp {
         } else {
             document.documentElement.setAttribute('data-color-theme', theme);
         }
+        this.updateStatusBarColor();
+    }
+
+    // Dynamic Status Bar Color update for mobile
+    updateStatusBarColor() {
+        // Use a small delay to ensure CSS has applied attributes
+        setTimeout(() => {
+            const header = document.querySelector('.app-header');
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (!header || !metaThemeColor) return;
+
+            let targetColor;
+            const groupColor = header.getAttribute('data-color');
+
+            // If we are in the editor and it has a custom color, we might want to use that 
+            // but the header is the top-most visual element.
+            const editorVisible = this.editorContainer.style.display === 'flex';
+            const note = this.currentNoteId ? this.notes.find(n => n.id === this.currentNoteId) : null;
+
+            if (editorVisible && note && note.color && note.color !== 'none') {
+                // Match note color if editing
+                const temp = document.createElement('div');
+                temp.style.color = `var(--color-${note.color})`;
+                document.body.appendChild(temp);
+                targetColor = getComputedStyle(temp).color;
+                document.body.removeChild(temp);
+            } else if (groupColor && groupColor !== 'none') {
+                // If header is color-coded by a group, match that exactly
+                targetColor = getComputedStyle(header).backgroundColor;
+            } else {
+                // Otherwise, use the current theme's primary vibrant color (brand color)
+                // We use a temporary element to resolve the CSS variable to an actual color string
+                const temp = document.createElement('div');
+                temp.style.color = 'var(--color-primary)';
+                document.body.appendChild(temp);
+                targetColor = getComputedStyle(temp).color;
+                document.body.removeChild(temp);
+            }
+
+            if (targetColor) {
+                metaThemeColor.setAttribute('content', targetColor);
+            }
+        }, 50);
     }
 
     // Touch gesture handlers for swipe

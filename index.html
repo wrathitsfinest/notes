@@ -9,7 +9,37 @@
         content="A beautiful and simple note-taking application to capture your thoughts and ideas.">
 
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#a05aff">
+    <script>
+        // Immediate theme application to prevent flash
+        (function () {
+            const savedTheme = localStorage.getItem('theme');
+            const savedColorTheme = localStorage.getItem('colorTheme') || 'cosmic';
+            const html = document.documentElement;
+
+            if (savedTheme === 'light' || (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+                html.setAttribute('data-theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+            }
+
+            if (savedColorTheme !== 'cosmic') {
+                html.setAttribute('data-color-theme', savedColorTheme);
+            }
+
+            const themeColors = {
+                cosmic: '#a05aff',
+                fire: '#f24040',
+                ocean: '#29d1ed',
+                forest: '#32cc70'
+            };
+
+            const meta = document.createElement('meta');
+            meta.name = 'theme-color';
+            meta.id = 'theme-meta';
+            meta.content = themeColors[savedColorTheme] || themeColors.cosmic;
+            document.head.appendChild(meta);
+        })();
+    </script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -158,7 +188,7 @@ l-249 252 35 53 c18 29 54 85 79 123 257 401 243 375 243 440 -1 53 -13 91
                             </svg>
                         </button>
                     </div>
-                    <span class="app-version">v1.0.61</span>
+                    <span class="app-version">v1.0.62</span>
                 </div>
             </aside>
 
