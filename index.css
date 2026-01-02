@@ -218,7 +218,7 @@ body {
 .app-header {
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: calc(var(--spacing-lg) + env(safe-area-inset-top, 0px)) var(--spacing-xl) var(--spacing-lg);
     box-shadow: var(--shadow-sm);
     z-index: 10;
     transition: background-color var(--transition-normal);
@@ -932,7 +932,7 @@ body {
 }
 
 .settings-header {
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: calc(var(--spacing-lg) + env(safe-area-inset-top, 0px)) var(--spacing-xl) var(--spacing-lg);
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
